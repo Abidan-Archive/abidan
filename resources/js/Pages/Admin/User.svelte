@@ -8,7 +8,7 @@
     import { popup } from '@skeletonlabs/skeleton';
     import { getModalStore } from '@skeletonlabs/skeleton';
 
-    export let users;
+    let { users } = $props();
 
     /** @type {import('@skeletonlabs/skeleton').PopupSettings} */
     const actionPopup = {
@@ -102,7 +102,7 @@
                                                     <button
                                                         type="button"
                                                         class="w-full"
-                                                        on:click={() =>
+                                                        onclick={() =>
                                                             action.handler(
                                                                 user
                                                             )}>

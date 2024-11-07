@@ -13,7 +13,8 @@
         recaptcha: null,
     });
 
-    function submit() {
+    function submit(e) {
+        e.preventDefault();
         recaptcha('register', (token) => {
             $form.recaptcha = token;
             $form.post(route('register'));
@@ -23,7 +24,7 @@
 
 <Page class="w-1/2" header="Register">
     <div class="card">
-        <form method="POST" on:submit|preventDefault={submit}>
+        <form method="POST" onsubmit={submit}>
             <div>
                 <Label for="username" value="Username" />
                 <Input

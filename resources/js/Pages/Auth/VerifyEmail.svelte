@@ -4,10 +4,12 @@
     import { Button } from '@/Components/forms';
     import { page, router } from '@inertiajs/svelte';
 
-    function resend() {
+    function resend(e) {
+        e.preventDefault();
         router.post(route('verification.send'));
     }
-    function logout() {
+    function logout(e) {
+        e.preventDefault();
         router.post(route('logout'));
     }
 </script>
@@ -28,13 +30,13 @@
         {/if}
 
         <div class="mt-4 flex items-center justify-between">
-            <form method="POST" on:submit|preventDefault={resend}>
+            <form method="POST" onsubmit={resend}>
                 <div>
                     <Button>Resend Verification Email</Button>
                 </div>
             </form>
 
-            <form method="POST" on:submit|preventDefault={logout}>
+            <form method="POST" onsubmit={logout}>
                 <button
                     type="submit"
                     class="focus:ring=2 rounded-md text-sm text-gray-400 underline hover:text-gray-100 focus:outline-none focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800">

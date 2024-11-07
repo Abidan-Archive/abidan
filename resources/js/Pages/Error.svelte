@@ -1,25 +1,29 @@
 <script>
-    export let status;
+    let { status } = $props();
 
-    $: title = {
-        503: 'Service Unavailable',
-        500: 'Server Error',
-        404: 'Page Not Found',
-        403: 'Forbidden',
-    }[status];
+    let title = $derived(
+        {
+            503: 'Service Unavailable',
+            500: 'Server Error',
+            404: 'Page Not Found',
+            403: 'Forbidden',
+        }[status]
+    );
 
-    $: description = {
-        503: [
-            'The application is currently undergoing maintenance.',
-            'Please check back soon.',
-        ],
-        500: [
-            'The server has encountered an internal error.',
-            'Should this persist, contact an admin with details on how to reproduce.',
-        ],
-        404: ['Sorry, the page you are looking for could not be found.'],
-        403: ['Sorry, you do not have permissions to access this page.'],
-    }[status];
+    let description = $derived(
+        {
+            503: [
+                'The application is currently undergoing maintenance.',
+                'Please check back soon.',
+            ],
+            500: [
+                'The server has encountered an internal error.',
+                'Should this persist, contact an admin with details on how to reproduce.',
+            ],
+            404: ['Sorry, the page you are looking for could not be found.'],
+            403: ['Sorry, you do not have permissions to access this page.'],
+        }[status]
+    );
 </script>
 
 <section

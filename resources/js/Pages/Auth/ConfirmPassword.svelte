@@ -10,7 +10,8 @@
         recaptcha: null,
     });
 
-    function submit() {
+    function submit(e) {
+        e.preventDefault();
         recaptcha('password.confirm', (token) => {
             $form.recaptcha = token;
             $form.post(route('password.confirm'));
@@ -24,7 +25,7 @@
             This is a secure area of the application. Please confirm password
             before continuing.
         </div>
-        <form method="POST" on:submit|preventDefault={submit}>
+        <form method="POST" onsubmit={submit}>
             <div>
                 <Label for="password" value="Password" />
                 <Input

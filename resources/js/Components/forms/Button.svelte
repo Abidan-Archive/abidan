@@ -2,12 +2,26 @@
     import cn from '@/lib/cn';
     import { cva } from 'class-variance-authority';
 
-    let className = '';
-    export { className as class };
-    export let href = undefined;
-    export let type = 'submit';
-    export let variant = 'default';
-    export let size = 'default';
+    /**
+     * @typedef {Object} Props
+     * @property {string} [class]
+     * @property {any} [href]
+     * @property {string} [type]
+     * @property {string} [variant]
+     * @property {string} [size]
+     * @property {import('svelte').Snippet} [children]
+     */
+
+    /** @type {Props & { [key: string]: any }} */
+    let {
+        class: className = '',
+        href = undefined,
+        type = 'submit',
+        variant = 'default',
+        size = 'default',
+        children,
+        ...rest
+    } = $props();
 
     const buttonVariants = cva(
         'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background ',
@@ -43,12 +57,6 @@
     type={href ? undefined : type}
     {href}
     class={cn(buttonVariants({ variant, size, className }))}
-    {...$$restProps}
-    on:click
-    on:change
-    on:keydown
-    on:keyup
-    on:mouseenter
-    on:mouseleave>
-    <slot />
+    {...rest}>
+    {@render children?.()}
 </svelte:element>

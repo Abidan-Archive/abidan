@@ -9,14 +9,15 @@
 
     const modalStore = getModalStore();
 
-    export let tag;
+    let { tag } = $props();
 
     let form = useForm({
         name: tag.name,
         color: tag.color,
     });
 
-    function submit() {
+    function submit(e) {
+        e.preventDefault();
         $form.put(route('tag.update', tag));
     }
 
@@ -46,7 +47,7 @@
             <form
                 id="update-form"
                 method="POST"
-                on:submit|preventDefault={submit}
+                onsubmit={submit}
                 class="mb-4 flex flex-col gap-4">
                 <div class="flex flex-col gap-2">
                     <Label for="name">Name</Label>

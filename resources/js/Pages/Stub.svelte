@@ -5,7 +5,7 @@
     import Paginator from '@/Components/Paginator.svelte';
     import route from '@/lib/route';
 
-    export let stubs;
+    let { stubs } = $props();
 </script>
 
 <Page header="All Stubs">

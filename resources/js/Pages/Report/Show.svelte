@@ -2,7 +2,7 @@
     import Page from '@/Components/Page.svelte';
     import Report from '@/Components/Report.svelte';
 
-    export let report;
+    let { report } = $props();
 </script>
 
 <svelte:head>

@@ -2,16 +2,33 @@
     import { inertia } from '@inertiajs/svelte';
     import { Previous, Next } from '@/Components/icons';
 
-    export let current_page;
-    export let last_page;
-    export let per_page = 20;
-    export let from;
-    export let to;
-    export let total;
-    export let next_page_url;
-    export let prev_page_url;
-    export let links;
-    export let maxResultDisclaimer = false;
+    /**
+     * @typedef {Object} Props
+     * @property {any} current_page
+     * @property {any} last_page
+     * @property {number} [per_page]
+     * @property {any} from
+     * @property {any} to
+     * @property {any} total
+     * @property {any} next_page_url
+     * @property {any} prev_page_url
+     * @property {any} links
+     * @property {boolean} [maxResultDisclaimer]
+     */
+
+    /** @type {Props} */
+    let {
+        current_page,
+        last_page,
+        per_page = 20,
+        from,
+        to,
+        total,
+        next_page_url,
+        prev_page_url,
+        links,
+        maxResultDisclaimer = false,
+    } = $props();
 </script>
 
 {#if total > per_page}

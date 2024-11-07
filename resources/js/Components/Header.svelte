@@ -22,7 +22,8 @@
         placement: 'bottom',
     };
 
-    function onLogout() {
+    function onLogout(e) {
+        e.preventDefault();
         router.post(route('logout'));
     }
 </script>
@@ -35,13 +36,13 @@
     slotLead="lg:hidden"
     slotDefault="place-self-center lg:place-self-start"
     slotTrail="place-self-end h-full flex items-center">
-    <svelte:fragment slot="lead">
+    {#snippet lead()}
         <button
             class="btn-icon btn-sm !bg-transparent"
-            on:click={openLeftNavSidebar}>
+            onclick={openLeftNavSidebar}>
             <Hamburger />
         </button>
-    </svelte:fragment>
+    {/snippet}
 
     <a use:inertia href={route('home')}>
         <div class="flex h-full flex-row items-center justify-start gap-2">
@@ -53,7 +54,7 @@
         </div>
     </a>
 
-    <svelte:fragment slot="trail">
+    {#snippet trail()}
         <Navigation class="hidden lg:block" />
         <div>
             {#if !!$page.props.auth?.user}
@@ -89,11 +90,10 @@
                             </li>
                             <hr />
                             <li>
-                                <form
-                                    method="post"
-                                    on:submit|preventDefault={onLogout}>
-                                    <button type="submit" class="w-full"
-                                        >Logout</button>
+                                <form method="post" onsubmit={onLogout}>
+                                    <button type="submit" class="w-full">
+                                        Logout
+                                    </button>
                                 </form>
                             </li>
                         </ul>
@@ -106,5 +106,5 @@
                 </a>
             {/if}
         </div>
-    </svelte:fragment>
+    {/snippet}
 </AppBar>

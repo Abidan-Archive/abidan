@@ -7,10 +7,15 @@
 
     const toastStore = getToastStore();
 
-    let className = '';
-    export { className as class };
-    export let withEvent = true;
-    export let report;
+    /**
+     * @typedef {Object} Props
+     * @property {string} [class]
+     * @property {boolean} [withEvent]
+     * @property {any} report
+     */
+
+    /** @type {Props} */
+    let { class: className = '', withEvent = true, report } = $props();
 
     const formattedDate = new Date(report.date).toLocaleDateString('en-US');
     const removeVerbs = new Oddment({
@@ -105,17 +110,17 @@
         <div class="flex items-center gap-2 text-sm text-typo-600">
             <button
                 class="flex hover:underline hover:underline-offset-4"
-                on:click={linkClicked}>
+                onclick={linkClicked}>
                 <Link class="inline" />
                 <span class="pl-1">Link</span>
             </button>
             <button
                 class="flex hover:underline hover:underline-offset-4"
-                on:click={copyClicked}>
+                onclick={copyClicked}>
                 <Copy class="inline" />
                 <span class="pl-1">Copy</span>
             </button>
-            <button class="flex" on:click={likeClicked}>
+            <button class="flex" onclick={likeClicked}>
                 <Heart
                     variant={report.is_liked ? 'filled' : 'outline'}
                     class={cn(report.is_liked && 'fill-error-500')} />

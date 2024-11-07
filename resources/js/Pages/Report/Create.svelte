@@ -2,8 +2,8 @@
     import Page from '@/Components/Page.svelte';
     import { ErrorMessage, Label, Button, Input } from '@/Components/forms';
 
-    export let stub = undefined;
-    let dialogues = [
+    let { stub = undefined } = $props();
+    let dialogues = $state([
         {
             speaker: 'Speaker',
             line: '',
@@ -12,8 +12,9 @@
             speaker: 'Will Wight',
             line: '',
         },
-    ];
-    function submit() {
+    ]);
+    function submit(e) {
+        e.preventDefault();
         console.log({ dialogues });
     }
 </script>
@@ -21,9 +22,9 @@
 <Page header="Create Report">
     {#if stub}
         <h3>{stub.prompt}</h3>
-        <audio src={stub.audio_url} controls />
+        <audio src={stub.audio_url} controls></audio>
     {/if}
-    <form method="POST" on:submit|preventDefault={submit}>
+    <form method="POST" onsubmit={submit}>
         {#each dialogues as dialogue, idx}
             <div class="card">
                 <div>
@@ -40,7 +41,7 @@
                     <textarea
                         id={'line-' + idx}
                         name="line[]"
-                        bind:value={dialogue.line} />
+                        bind:value={dialogue.line}></textarea>
                     <ErrorMessage message={'idk'} class="mt-2" />
                 </div>
             </div>

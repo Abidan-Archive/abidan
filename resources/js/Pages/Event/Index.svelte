@@ -3,7 +3,7 @@
     import Paginator from '@/Components/Paginator.svelte';
     import Event from '@/Components/Event.svelte';
 
-    export let events;
+    let { events } = $props();
 </script>
 
 <Page header="Events">

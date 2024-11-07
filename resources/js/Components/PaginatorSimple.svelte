@@ -1,12 +1,25 @@
 <script>
     import { inertia } from '@inertiajs/svelte';
 
-    export let current_page;
-    export let last_page;
-    export let per_page = 20;
-    export let total;
-    export let next_page_url;
-    export let prev_page_url;
+    /**
+     * @typedef {Object} Props
+     * @property {any} current_page
+     * @property {any} last_page
+     * @property {number} [per_page]
+     * @property {any} total
+     * @property {any} next_page_url
+     * @property {any} prev_page_url
+     */
+
+    /** @type {Props} */
+    let {
+        current_page,
+        last_page,
+        per_page = 20,
+        total,
+        next_page_url,
+        prev_page_url,
+    } = $props();
 </script>
 
 {#if total > per_page}

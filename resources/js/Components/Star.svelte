@@ -1,7 +1,14 @@
 <script>
+    /**
+     * @typedef {Object} Props
+     * @property {import('svelte').Snippet} [children]
+     */
+
+    /** @type {Props} */
+    let { children } = $props();
     const num = 100;
-    let width = 0;
-    let height = 0;
+    let width = $state(0);
+    let height = $state(0);
 
     function randomRadius() {
         return Math.random() * 0.8 + 0.6;
@@ -17,7 +24,7 @@
     bind:offsetHeight={height}>
     <div class="sky-container">
         {#each Array(5) as _}
-            <div class="shootingstar" />
+            <div class="shootingstar"></div>
         {/each}
     </div>
     <svg class="absolute fill-white stroke-white" {width} {height}>
@@ -28,7 +35,7 @@
                 r={randomRadius()} />
         {/each}
     </svg>
-    <slot />
+    {@render children?.()}
 </div>
 
 <style lang="scss">

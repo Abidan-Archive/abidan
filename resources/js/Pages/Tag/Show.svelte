@@ -5,8 +5,7 @@
     import Report from '@/Components/Report.svelte';
     import route from '@/lib/route';
 
-    export let tag;
-    export let reports;
+    let { tag, reports } = $props();
 
     const edit =
         ['admin', 'moderator'].some((role) =>

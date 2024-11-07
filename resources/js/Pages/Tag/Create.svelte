@@ -10,7 +10,8 @@
         name: null,
         color: getRandomColor(),
     });
-    function submit() {
+    function submit(e) {
+        e.preventDefault();
         $form.post(route('tag.store'));
     }
 </script>
@@ -29,10 +30,7 @@
                 )}>{$form.name || 'Tag'}</button>
         </section>
         <section class="w-2/3">
-            <form
-                method="POST"
-                on:submit|preventDefault={submit}
-                class="flex flex-col gap-4">
+            <form method="POST" onsubmit={submit} class="flex flex-col gap-4">
                 <div class="flex flex-col gap-2">
                     <Label for="name">Name</Label>
                     <Input

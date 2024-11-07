@@ -6,7 +6,7 @@
     import { ErrorMessage, Label, Input } from '@/Components/forms';
     import CircleInfo from '@/Components/icons/CircleInfo.svelte';
 
-    export let user;
+    let { user } = $props();
 
     const isAdmin = $page.props.auth.user?.roles.includes('admin');
 
@@ -28,7 +28,8 @@
         );
     }
 
-    function accountSubmit() {
+    function accountSubmit(e) {
+        e.preventDefault();
         recaptcha('user/update', (token) => {
             $accountForm.recaptcha = token;
             $accountForm
@@ -40,23 +41,25 @@
             );
         });
     }
-    function settingsSubmit() {}
-    let activeTab = 1;
+    function settingsSubmit(e) {
+        e.preventDefault();
+    }
+    let activeTab = $state(1);
 </script>
 
 <Page header="User Settings">
     <TabGroup>
         <!-- <Tab bind:group={activeTab} name="tab0" value={0}>General</Tab> -->
         <Tab bind:group={activeTab} name="tab1" value={1}>Account</Tab>
-        <svelte:fragment slot="panel">
+        {#snippet panel()}
             {#if activeTab === 0}
-                <form method="POST" on:submit|preventDefault={settingsSubmit}>
+                <form method="POST" onsubmit={settingsSubmit}>
                     WIP Settings
                 </form>
             {:else if activeTab === 1}
                 <form
                     method="POST"
-                    on:submit|preventDefault={accountSubmit}
+                    onsubmit={accountSubmit}
                     class="flex flex-col gap-4">
                     {#if user.is_sso}
                         <aside class="alert variant-ghost-primary mb-2">
@@ -172,6 +175,6 @@
                     {/if}
                 </form>
             {/if}
-        </svelte:fragment>
+        {/snippet}
     </TabGroup>
 </Page>

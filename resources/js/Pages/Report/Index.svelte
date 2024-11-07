@@ -3,7 +3,7 @@
     import Paginator from '@/Components/Paginator.svelte';
     import Report from '@/Components/Report.svelte';
 
-    export let reports;
+    let { reports } = $props();
 </script>
 
 <Page header="Reports">

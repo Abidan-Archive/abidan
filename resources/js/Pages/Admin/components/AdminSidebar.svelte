@@ -11,12 +11,20 @@
         // 'Review Reports': route('home'),
     };
 
-    let className = '';
-    export { className as class };
-    let filter = '';
-    $: filtered = Object.entries(links).filter(
-        ([key]) =>
-            !filter || key.toLowerCase().indexOf(filter.toLowerCase()) > -1
+    /**
+     * @typedef {Object} Props
+     * @property {string} [class]
+     */
+
+    /** @type {Props} */
+    let { class: className = '' } = $props();
+
+    let filter = $state('');
+    let filtered = $derived(
+        Object.entries(links).filter(
+            ([key]) =>
+                !filter || key.toLowerCase().indexOf(filter.toLowerCase()) > -1
+        )
     );
     function onKeyDown(e) {
         if (e.repeat) return;
