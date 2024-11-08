@@ -42,6 +42,8 @@
                 audiowaveform
 
                 # Development
+                sops
+
                 # LSP
                 phpactor
                 vscode-langservers-extracted
@@ -69,9 +71,17 @@
                 ];
               };
 
+              languages.javascript = {
+                enable = true;
+                pnpm = {
+                    enable = true;
+                    install.enable = true;
+                };
+              };
+
               processes = {
                 server.exec = "php artisan serve";
-                vite.exec = "npm run dev";
+                vite.exec = "pnpm dev";
               };
 
               services.meilisearch = {
