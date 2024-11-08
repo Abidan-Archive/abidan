@@ -8,10 +8,11 @@
     import Tag from '@/Components/Tag.svelte';
 
     let { tags } = $props();
+
     let filter = $state('');
     let sortState = $state(null);
     const sortOptions = [
-        { value: 'name', label: 'Alpha' },
+        { value: 'name', label: 'Alphabetical' },
         { value: 'reports_count', label: 'Reports' },
     ];
 
@@ -57,7 +58,7 @@
             on:keydown={onKeyDown} />
         <div>
             <SortBy
-                bind:state={sortState}
+                bind:value={sortState}
                 options={sortOptions}
                 placeholder="Sort" />
         </div>
@@ -68,8 +69,9 @@
         {:else}
             <div
                 class="flex-shrink-0 self-center align-center w-full text-center"
-                in:fade={{ delay: 401 }}>
-                Ozriel cleaned too much here. Not a speck of tags to be found.
+                in:fade={{ delay: 400 }}>
+                An Arelius cleaned too much here. Not a speck of tags to be
+                found.
             </div>
         {/each}
     </div>

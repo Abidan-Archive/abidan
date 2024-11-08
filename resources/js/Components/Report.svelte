@@ -65,9 +65,10 @@
             router.post(route('like'), {
                 likeable_type: 'App\\Models\\Report',
                 id: report.id,
-            });
-            toastStore.trigger({
-                message: `${likedVerbs.pick()} Report #${report.id}`,
+                onSuccess: () =>
+                    toastStore.trigger({
+                        message: `${likedVerbs.pick()} Report #${report.id}`,
+                    }),
             });
         } else {
             // router delete doesn't allow payload, so we're faking it with _method
@@ -75,12 +76,12 @@
                 _method: 'DELETE',
                 likeable_type: 'App\\Models\\Report',
                 id: report.id,
-            });
-
-            toastStore.trigger({
-                message: `Report #${
-                    report.id
-                } ${removeVerbs.pick()} from your likes`,
+                onSuccess: () =>
+                    toastStore.trigger({
+                        message: `Report #${
+                            report.id
+                        } ${removeVerbs.pick()} from your likes`,
+                    }),
             });
         }
     }
@@ -142,7 +143,7 @@
     <div class="flex justify-between">
         <section>
             {#if !!report.footnote}
-                <h5>Footnote:</h5>
+                <h5 class="font-bold">Footnote:</h5>
                 <p>{report.footnote}</p>
             {/if}
         </section>

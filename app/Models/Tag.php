@@ -17,8 +17,6 @@ class Tag extends Model
 
     protected $fillable = ['name', 'color'];
 
-    protected $aapends = ['color'];
-
     public function reports(): BelongsToMany
     {
         return $this->belongsToMany(Report::class);

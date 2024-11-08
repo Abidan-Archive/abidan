@@ -22,6 +22,7 @@
             id="page"
             class="flex flex-1 flex-col overflow-x-hidden"
             style:scrollbar-gutter="auto"
+            scroll-region
             {...rest}>
             <main id="page-content" class="flex-auto">
                 {@render children?.()}
