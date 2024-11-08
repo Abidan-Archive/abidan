@@ -14,27 +14,32 @@
     const toastStore = getToastStore();
 
     // Todo:
-    // - Handle errors / form validation for stubs
 
-    export let event;
-    export let source;
+    /**
+     * @typedef {Object} Props
+     * @property {any} event - - Handle errors / form validation for stubs
+     * @property {any} source
+     */
+
+    /** @type {Props} */
+    let { event, source } = $props();
 
     let audioUrl = source.url;
     let waveformDataUrl = source.dat_url;
     let audioContentType = 'audio/mpeg';
     let audioContext = null;
 
-    let zoomviewWaveformRef;
-    let overviewWaveformRef;
-    let audioElementRef;
-    let peaks = null;
+    let zoomviewWaveformRef = $state();
+    let overviewWaveformRef = $state();
+    let audioElementRef = $state();
+    let peaks = $state(null);
 
-    let currentTime = 0;
-    let duration;
+    let currentTime = $state(0);
+    let duration = $state();
     let playing = false;
 
-    let segments = [];
-    let segmentPlaying = null;
+    let segments = $state([]);
+    let segmentPlaying = $state(null);
 
     toastStore.trigger({ message: $page.props?.flash });
 
@@ -233,7 +238,8 @@
         if (e.key === 'Shift') isShiftHeld = false;
     }
 
-    function submit() {
+    function submit(e) {
+        e.preventDefault();
         const stubs = segments.map((s) => ({
             from: s.startTime,
             to: s.endTime,
@@ -249,15 +255,16 @@
     }
 </script>
 
-<svelte:window on:keydown={onKeyDown} on:keyup={onKeyUp} />
+<svelte:window onkeydown={onKeyDown} onkeyup={onKeyUp} />
 <Page class="flex w-full flex-col gap-5">
     <figure class="flex flex-col items-center gap-2">
         <figcaption class="my-2">{event.name} - {source.name}</figcaption>
-        <div id="overview-container" bind:this={overviewWaveformRef} />
+        <div id="overview-container" bind:this={overviewWaveformRef}></div>
         <div
             id="zoomview-container"
             class="mb-2"
-            bind:this={zoomviewWaveformRef} />
+            bind:this={zoomviewWaveformRef}>
+        </div>
 
         <audio bind:this={audioElementRef} bind:currentTime bind:duration>
             <source src={audioUrl} type={audioContentType} />
@@ -272,7 +279,7 @@
     </figure>
     {#if !!segments && !!segments?.length}
         <hr />
-        <form method="POST" on:submit|preventDefault={submit}>
+        <form method="POST" onsubmit={submit}>
             <div class="mb-8 flex flex-col justify-center gap-2">
                 {#each segments as segment}
                     <div
@@ -284,10 +291,9 @@
                             on:click={segmentPlaying === segment.id
                                 ? playpause()
                                 : playSegment(segment)}>
-                            <svelte:component
-                                this={segmentPlaying === segment.id
-                                    ? Pause
-                                    : Play} />
+                            {@const SvelteComponent =
+                                segmentPlaying === segment.id ? Pause : Play}
+                            <SvelteComponent />
                         </IconButton>
                         <div class="flex flex-col">
                             <div class="flex items-center gap-2">
@@ -300,7 +306,7 @@
                                     type="text"
                                     class="h-5 w-20 rounded text-black"
                                     value={segment.startTime}
-                                    on:input={(e) =>
+                                    oninput={(e) =>
                                         updateSegmentStart(e, segment)}
                                     required />
                             </div>
@@ -312,7 +318,7 @@
                                     type="text"
                                     class="h-5 w-20 rounded text-black"
                                     value={segment.endTime}
-                                    on:input={(e) =>
+                                    oninput={(e) =>
                                         updateSegmentEnd(e, segment)}
                                     required />
                             </div>
@@ -325,7 +331,7 @@
                                 type="text"
                                 class="w-full rounded text-black"
                                 placeholder="Blurb"
-                                on:input={(e) =>
+                                oninput={(e) =>
                                     updateSegmentBlurb(e, segment)} />
                         </div>
                         <IconButton

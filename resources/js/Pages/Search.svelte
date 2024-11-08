@@ -4,8 +4,7 @@
     import Paginator from '@/Components/Paginator.svelte';
     import Page from '@/Components/Page.svelte';
 
-    export let reports;
-    export let tags;
+    let { reports, tags } = $props();
 </script>
 
 <Page header="Search Results">

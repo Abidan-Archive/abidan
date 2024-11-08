@@ -1,11 +1,24 @@
 <script>
     import cn from '@/lib/cn';
 
-    let className = '';
-    export let large = false;
-    export let marked = false;
-    export let light = false;
-    export { className as class };
+    /**
+     * @typedef {Object} Props
+     * @property {string} [class]
+     * @property {boolean} [large]
+     * @property {boolean} [marked]
+     * @property {boolean} [light]
+     * @property {import('svelte').Snippet} [children]
+     */
+
+    /** @type {Props & { [key: string]: any }} */
+    let {
+        class: className = '',
+        large = false,
+        marked = false,
+        light = false,
+        children,
+        ...rest
+    } = $props();
 </script>
 
 <button
@@ -19,7 +32,6 @@
         { 'text-black': !light, 'text-typo-500': !!light },
         className
     )}
-    on:click
-    {...$$restProps}>
-    <slot />
+    {...rest}>
+    {@render children?.()}
 </button>

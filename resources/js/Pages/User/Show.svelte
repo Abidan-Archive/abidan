@@ -2,8 +2,7 @@
     import Page from '@/Components/Page.svelte';
     import Report from '@/Components/Report.svelte';
 
-    export let user;
-    export let likes;
+    let { user, likes } = $props();
 </script>
 
 <Page header={`User - ${user.username}`}>

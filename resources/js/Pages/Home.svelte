@@ -6,10 +6,7 @@
     import Heart from '@/Components/icons/Heart.svelte';
     import SearchForm from '@/Components/SearchForm.svelte';
 
-    export let events;
-    export let mostLiked;
-    export let quote;
-    export let contributors;
+    let { events, mostLiked, quote, contributors } = $props();
 </script>
 
 <div
@@ -112,7 +109,7 @@
                 {:else}
                     <li>Slackers.</li>
                 {/each}
-                <ol />
+                <ol></ol>
             </ol>
         </section>
     {/if}

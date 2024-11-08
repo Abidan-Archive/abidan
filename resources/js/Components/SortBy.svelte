@@ -2,29 +2,41 @@
     import cn from '@/lib/cn';
     import { ChevronUp, ChevronDown, ChevronUpDown } from '@/Components/icons';
 
-    export let state;
-    let className = '';
-    export { className as class };
+    /**
+     * @typedef {Object} Props
+     * @property {any} value
+     * @property {string} [class]
+     * @property {any} [options] - {value, label}
+     * @property {any} placeholder
+     */
 
-    let sortKey;
-    export let options = []; // {value, label}
-    export let placeholder;
+    /** @type {Props} */
+    let {
+        value = $bindable(),
+        class: className = '',
+        options = [],
+        placeholder,
+    } = $props();
+    let sortKey = $state();
 
     const directions = [
         { icon: ChevronUpDown, value: 0, label: 'No Sort Direction' },
         { icon: ChevronUp, value: 1, label: 'Ascending Sort' },
         { icon: ChevronDown, value: -1, label: 'Descending Sort' },
     ];
-    let d = 0; // Direction index, internal use only
-    function cycleDirections() {
-        d = (d + 1) % directions.length;
-    }
-    $: {
-        if (d !== 0 && !!sortKey) {
-            state = { key: sortKey, direction: directions[d].value };
+    let idx = $state(0); // Direction index, internal use only
+    const Icon = $derived(directions[idx].icon);
+
+    $effect(() => {
+        if (idx !== 0 && !!sortKey) {
+            value = { key: sortKey, direction: directions[idx].value };
         } else {
-            state = null;
+            value = null;
         }
+    });
+
+    function cycleDirections() {
+        idx = (idx + 1) % directions.length;
     }
 </script>
 
@@ -34,7 +46,7 @@
         id="sortby-select"
         bind:value={sortKey}
         class={cn(
-            'apperance-none peer block w-full border-0 bg-transparent bg-none px-0 py-2.5 text-gray-300 focus:outline-none focus:ring-0',
+            'peer block w-full appearance-none border-0 bg-transparent bg-none px-0 py-2.5 text-gray-300 focus:outline-none focus:ring-0',
             className
         )}>
         {#if placeholder}
@@ -44,8 +56,8 @@
             <option value={option.value}>{option.label}</option>
         {/each}
     </select>
-    <button type="button" class="px-2" on:click={cycleDirections}>
-        <span class="sr-only">{directions[d].label}</span>
-        <svelte:component this={directions[d].icon} />
+    <button type="button" class="px-2" onclick={cycleDirections}>
+        <span class="sr-only">{directions[idx].label}</span>
+        <Icon />
     </button>
 </div>

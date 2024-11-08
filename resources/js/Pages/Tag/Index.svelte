@@ -7,23 +7,12 @@
     import Input from '@/Components/forms/Input.svelte';
     import Tag from '@/Components/Tag.svelte';
 
-    export let tags;
-    let filter = '';
-    let sortState = null;
-    let data;
-    $: {
-        // Svelte magic, assignment triggers updates, reactivity of data needs to know sortState is updating
-        sortState;
-        data = tags
-            .filter(
-                (tag) =>
-                    !filter ||
-                    tag.name.toLowerCase().indexOf(filter.toLowerCase()) > -1
-            )
-            .sort(sortFn);
-    }
+    let { tags } = $props();
+
+    let filter = $state('');
+    let sortState = $state(null);
     const sortOptions = [
-        { value: 'name', label: 'Alpha' },
+        { value: 'name', label: 'Alphabetical' },
         { value: 'reports_count', label: 'Reports' },
     ];
 
@@ -48,6 +37,15 @@
         if (e.repeat) return;
         if (e.code === 'Enter' && data.length === 1) router.get(data[0]);
     }
+    let data = $derived(
+        tags
+            .filter(
+                (tag) =>
+                    !filter ||
+                    tag.name.toLowerCase().indexOf(filter.toLowerCase()) > -1
+            )
+            .toSorted(sortFn)
+    );
 </script>
 
 <Page header="Tags">
@@ -60,7 +58,7 @@
             on:keydown={onKeyDown} />
         <div>
             <SortBy
-                bind:state={sortState}
+                bind:value={sortState}
                 options={sortOptions}
                 placeholder="Sort" />
         </div>
@@ -71,8 +69,9 @@
         {:else}
             <div
                 class="flex-shrink-0 self-center align-center w-full text-center"
-                in:fade={{ delay: 401 }}>
-                Ozriel cleaned too much here. Not a speck of tags to be found.
+                in:fade={{ delay: 400 }}>
+                An Arelius cleaned too much here. Not a speck of tags to be
+                found.
             </div>
         {/each}
     </div>

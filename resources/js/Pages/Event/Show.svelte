@@ -6,8 +6,7 @@
     import Report from '@/Components/Report.svelte';
     import isValidUrl from '@/lib/url';
 
-    export let event;
-    export let reports;
+    let { event, reports } = $props();
 
     const edit =
         ['admin', 'moderator'].some((role) =>

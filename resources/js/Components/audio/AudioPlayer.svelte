@@ -1,27 +1,32 @@
 <script>
     import { onMount } from 'svelte';
-    export let src;
-    export let title = 'untitled';
     // export let muted = false;
-    // export let crossorigin;
-    export let loop = true;
+    /**
+     * @typedef {Object} Props
+     * @property {any} src
+     * @property {string} [title]
+     * @property {boolean} [loop] - export let crossorigin;
+     */
+
+    /** @type {Props} */
+    let { src, title = 'untitled', loop = true } = $props();
     // export let preload = true;
 
     const barWidth = 3;
     const gap = 2;
 
-    let audio; // MediaElement
+    let audio = $state(); // MediaElement
     let audioCtx = new AudioContext();
     let track;
     let gainNode;
     let analyserNode;
-    let canvas;
+    let canvas = $state();
     let canvasCtx;
 
-    let isPlaying;
-    let currentTime;
-    let duration;
-    let volume = 0.4;
+    let isPlaying = $state();
+    let currentTime = $state();
+    let duration = $state();
+    let volume = $state(0.4);
     let bufferLength;
     let dataArray;
 
@@ -118,11 +123,11 @@
         bind:this={audio}
         bind:duration
         bind:currentTime
-        on:ended={ended} />
+        onended={ended}></audio>
     <button
         type="button"
         class="h-8 w-8 min-w-8 appearance-none overflow-hidden border-none bg-white text-black"
-        on:click={togglePlay}>
+        onclick={togglePlay}>
         {#if !isPlaying}
             play
         {:else}
@@ -135,14 +140,14 @@
             type="range"
             max={duration}
             value={currentTime}
-            on:input={(e) => seekTo(e.target.value)} />
+            oninput={(e) => seekTo(e.target.value)} />
         <span>{formatTime(duration)}</span>
-        <canvas bind:this={canvas} class="h-3 w-full" />
+        <canvas bind:this={canvas} class="h-3 w-full"></canvas>
     </div>
-    <button
-        type="button"
-        class="h-8 w-8 min-w-8 appearance-none overflow-hidden border-none bg-cyan-500 text-black"
-        on:click={() => undefined} />
+    <!-- <button -->
+    <!--     type="button" -->
+    <!--     class="h-8 w-8 min-w-8 appearance-none overflow-hidden border-none bg-cyan-500 text-black" -->
+    <!--     onclick={() => undefined}></button> -->
     <div class="hidden">
         <input
             type="range"
@@ -150,6 +155,6 @@
             max="2"
             step="0.01"
             value={volume}
-            on:input={(e) => changeVolume(e.target.value)} />
+            oninput={(e) => changeVolume(e.target.value)} />
     </div>
 </figure>

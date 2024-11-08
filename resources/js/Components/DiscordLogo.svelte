@@ -1,7 +1,12 @@
 <script>
     import cn from '@/lib/cn.js';
-    let className = '';
-    export { className as class };
+    /**
+     * @typedef {Object} Props
+     * @property {string} [class]
+     */
+
+    /** @type {Props} */
+    let { class: className = '' } = $props();
 </script>
 
 <svg

@@ -12,7 +12,7 @@
     const toastStore = getToastStore();
     const modalStore = getModalStore();
 
-    export let event;
+    let { event } = $props();
 
     let form = useForm({
         name: event.name,
@@ -40,7 +40,8 @@
         $form.sources = [];
     }
 
-    function handleEventSubmit() {
+    function handleEventSubmit(e) {
+        e.preventDefault();
         router.post(
             route('event.update', event.id),
             {
@@ -56,7 +57,8 @@
     let renameSource = useForm({
         name: null,
     });
-    function handleRenameSourceSubmit(source) {
+    function handleRenameSourceSubmit(e, source) {
+        e.preventDefault();
         // And set the name on submit
         $renameSource.name = source.name;
         // Then submit to the proper source
@@ -104,7 +106,7 @@
 <section class="contianer mx-auto mt-10">
     <h2 class="my-5 text-2xl">Edit Event</h2>
     <div class="card">
-        <form method="POST" on:submit|preventDefault={handleEventSubmit}>
+        <form method="POST" onsubmit={handleEventSubmit}>
             <div class="block">
                 <Label for="name">Name</Label>
                 <Input
@@ -154,7 +156,7 @@
                             <button
                                 type="button"
                                 class="text-red-400"
-                                on:click={handleRemoveAllFiles}
+                                onclick={handleRemoveAllFiles}
                                 >Remove All</button>
                         </div>
                         {#each $form.sources as item, i}
@@ -164,7 +166,7 @@
                                     type="button"
                                     class="text-red-400"
                                     aria-label="Remove File"
-                                    on:click={() => handleRemoveFile(i)}
+                                    onclick={() => handleRemoveFile(i)}
                                     ><CircleX /></button>
                             </div>
                         {/each}
@@ -186,8 +188,7 @@
             <div class="card flex items-center justify-between">
                 <form
                     method="PATCH"
-                    on:submit|preventDefault={() =>
-                        handleRenameSourceSubmit(source)}
+                    onsubmit={(e) => handleRenameSourceSubmit(e, source)}
                     class="flex items-center gap-1">
                     <Button
                         href={route('event.source.stub.create', [
@@ -199,7 +200,7 @@
                         bind:value={source.name} />
                     <Button type="submit">Rename</Button>
                 </form>
-                <audio src={source.url} controls class="z-0" />
+                <audio src={source.url} controls class="z-0"></audio>
                 <Button
                     variant="danger"
                     on:click={() =>

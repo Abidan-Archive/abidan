@@ -1,8 +1,12 @@
 <script>
     import cn from '@/lib/cn';
-    let className = '';
+    /**
+     * @typedef {Object} Props
+     * @property {string} [class]
+     */
 
-    export { className as class };
+    /** @type {Props} */
+    let { class: className = '' } = $props();
 </script>
 
 <div
@@ -10,19 +14,19 @@
     aria-label="Abidan Archive Logo">
     <div class="fire">
         <div class="fire-left">
-            <div class="main-fire" />
-            <div class="particle-fire" />
+            <div class="main-fire"></div>
+            <div class="particle-fire"></div>
         </div>
         <div class="fire-center">
-            <div class="main-fire" />
-            <div class="particle-fire" />
+            <div class="main-fire"></div>
+            <div class="particle-fire"></div>
         </div>
         <div class="fire-right">
-            <div class="main-fire" />
-            <div class="particle-fire" />
+            <div class="main-fire"></div>
+            <div class="particle-fire"></div>
         </div>
         <div class="fire-bottom">
-            <div class="main-fire" />
+            <div class="main-fire"></div>
         </div>
     </div>
 </div>

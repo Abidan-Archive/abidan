@@ -1,19 +1,29 @@
 <script>
-    export let value = null;
+    /**
+     * @typedef {Object} Props
+     * @property {any} [value]
+     * @property {any} for
+     * @property {string} [class]
+     * @property {import('svelte').Snippet} [children]
+     */
 
-    let forInput;
-    let className = '';
-    export { className as class };
-    export { forInput as for };
+    /** @type {Props & { [key: string]: any }} */
+    let {
+        value = null,
+        for: forInput,
+        class: className = '',
+        children,
+        ...rest
+    } = $props();
 </script>
 
 <label
     for={forInput}
     class={`block text-sm font-medium text-gray-300 ${className}`}
-    {...$$restProps}>
+    {...rest}>
     {#if !!value}
         {value}
     {:else}
-        <slot />
+        {@render children?.()}
     {/if}
 </label>

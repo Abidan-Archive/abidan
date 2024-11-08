@@ -1,12 +1,24 @@
 <script>
     import cn from '@/lib/cn';
 
-    let className = '';
-    export { className as class };
-    export let href = undefined;
-    export let type = 'submit';
+    /**
+     * @typedef {Object} Props
+     * @property {string} [class]
+     * @property {any} [href]
+     * @property {string} [type]
+     * @property {string} [themeDeg]
+     * @property {import('svelte').Snippet} [children]
+     */
 
-    export let themeDeg = '0deg';
+    /** @type {Props & { [key: string]: any }} */
+    let {
+        class: className = '',
+        href = undefined,
+        type = 'submit',
+        themeDeg = '0deg',
+        children,
+        ...rest
+    } = $props();
 </script>
 
 <svelte:element
@@ -16,17 +28,11 @@
     type={href ? undefined : type}
     {href}
     class={cn('button-3d', className)}
-    {...$$restProps}
-    on:click
-    on:change
-    on:keydown
-    on:keyup
-    on:mouseenter
-    on:mouseleave>
-    <span class="shadow" />
-    <span class="edge" />
+    {...rest}>
+    <span class="shadow"></span>
+    <span class="edge"></span>
     <span class="front">
-        <slot />
+        {@render children?.()}
     </span>
 </svelte:element>
 

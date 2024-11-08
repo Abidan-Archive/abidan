@@ -4,11 +4,15 @@
     import cn from '@/lib/cn';
     import { getContrastText } from '@/lib/color';
 
-    export let tag;
+    /**
+     * @typedef {Object} Props
+     * @property {any} tag
+     * @property {string} [class]
+     * @property {boolean} [showCount]
+     */
 
-    let classname = '';
-    export { classname as class };
-    export let showCount = false;
+    /** @type {Props} */
+    let { tag, class: classname = '', showCount = false } = $props();
 </script>
 
 <a

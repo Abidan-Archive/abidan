@@ -22,6 +22,13 @@
     import Header from '@/Components/Header.svelte';
     import Navigation from '@/Components/Navigation.svelte';
     import BanModal from '@/Components/modals/BanModal.svelte';
+    /**
+     * @typedef {Object} Props
+     * @property {import('svelte').Snippet} [children]
+     */
+
+    /** @type {Props} */
+    let { children } = $props();
 
     storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
     initializeStores();
@@ -40,10 +47,11 @@
         });
 
     let validationCount = Object.keys($page.props.errors).length;
-    $: validationTitlePrefix = validationCount
-        ? `(${validationCount} errors) `
-        : '';
-    console.log({ validationCount, validationTitlePrefix });
+    let validationTitlePrefix = $derived(
+        validationCount ? `(${validationCount} errors) ` : ''
+    );
+    $inspect(validationCount, validationTitlePrefix);
+    // console.log({ validationCount, validationTitlePrefix });
 
     const modalRegistry = {
         banModal: { ref: BanModal },
@@ -65,9 +73,13 @@
 <Toast />
 <Modal components={modalRegistry} />
 <AppShell>
-    <Header slot="header" />
-    <slot />
-    <Footer slot="footer" />
+    {#snippet header()}
+        <Header />
+    {/snippet}
+    {@render children?.()}
+    {#snippet footer()}
+        <Footer />
+    {/snippet}
 </AppShell>
 
 <style @global lang="postcss">

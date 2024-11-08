@@ -4,10 +4,7 @@
     import route from '@/lib/route.js';
     import { ErrorMessage, Label, Button, Input } from '@/Components/forms';
 
-    export let event;
-    export let source;
-    export let stub;
-    export let tags;
+    let { event, source, stub, tags } = $props();
 
     const audioUrl = source.url;
     const audioContentType = 'audio/mpeg';
@@ -49,7 +46,7 @@
     </figure>
     <h3>Create Report</h3>
     <hr />
-    <form on:submit={submit} class="flex flex-col gap-4">
+    <form onsubmit={submit} class="flex flex-col gap-4">
         {#each $form.dialogues as dialogue, idx}
             <div class="flex flex-col gap-2">
                 <div>
@@ -66,11 +63,11 @@
                         class="w-full rounded-md border-gray-700 bg-gray-900 text-gray-300 shadow-sm focus:border-indigo-600 focus:ring-indigo-600"
                         id={'line-' + idx}
                         bind:value={dialogue.line}
-                        required />
+                        required></textarea>
                 </div>
                 <div>
                     <button
-                        on:click={() => removeDialogue(idx)}
+                        onclick={() => removeDialogue(idx)}
                         class="text-red-600 underline hover:text-red-700">
                         Remove Section
                     </button>

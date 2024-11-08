@@ -1,20 +1,34 @@
 <script>
-    export let href = '';
-    export let ariaLabel = '';
-    export let target = '_blank';
-    export let ref = 'noreferrer';
+    import cn from '@/lib/cn';
+    /**
+     * @typedef {Object} Props
+     * @property {string} [class]
+     * @property {string} [href]
+     * @property {string} [target]
+     * @property {string} [ref]
+     * @property {import('svelte').Snippet} [children]
+     */
+
+    /** @type {Props & { [key: string]: any }} */
+    let {
+        class: className = '',
+        href = '',
+        target = '_blank',
+        ref = 'noreferrer',
+        children,
+        ...rest
+    } = $props();
 </script>
 
 {#if href}
     <a
-        {...$$restProps}
+        {...rest}
         {href}
         {target}
         {ref}
-        aria-label={ariaLabel}
-        class={`text-on-surface-token hover:text-surface-300 ${$$props.class}`}>
-        <slot />
+        class={cn(`text-on-surface-token hover:text-surface-300`, className)}>
+        {@render children?.()}
     </a>
 {:else}
-    <slot />
+    {@render children?.()}
 {/if}

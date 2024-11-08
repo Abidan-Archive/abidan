@@ -7,24 +7,32 @@
     import TagFilter from '@/Components/TagFilter.svelte';
     import pickBy from 'lodash/pickBy';
 
-    let className;
-    export { className as class };
-    export let advanced = false;
-    export let tags = [];
+    /**
+     * @typedef {Object} Props
+     * @property {any} class
+     * @property {boolean} [advanced]
+     * @property {any} [tags]
+     */
+
+    /** @type {Props} */
+    let { class: className, advanced = false, tags = [] } = $props();
 
     const urlParams = new URLSearchParams(window.location.search);
-    let query = urlParams.get('query') || '';
-    let includeTags = urlParams.get('includeTags')?.split(',') || [];
-    let excludeTags = urlParams.get('excludeTags')?.split(',') || [];
+    let query = $state(urlParams.get('query') || '');
+    let includeTags = $state(urlParams.get('includeTags')?.split(',') || []);
+    let excludeTags = $state(urlParams.get('excludeTags')?.split(',') || []);
     const orderBy = urlParams.get('orderBy')?.split(',') || null;
-    let sortState = orderBy
-        ? {
-              key: orderBy[0],
-              direction: orderBy[1] == 'ASC' ? 1 : -1,
-          }
-        : null;
+    let sortState = $state(
+        orderBy
+            ? {
+                  key: orderBy[0],
+                  direction: orderBy[1] == 'ASC' ? 1 : -1,
+              }
+            : null
+    );
 
-    function submit() {
+    function submit(e) {
+        e.preventDefault();
         const values = pickBy({
             query,
             includeTags: includeTags.join(','),
@@ -38,9 +46,7 @@
     }
 </script>
 
-<form
-    class={cn('flex flex-col gap-2', className)}
-    on:submit|preventDefault={submit}>
+<form class={cn('flex flex-col gap-2', className)} onsubmit={submit}>
     <div class="group flex h-14 w-full items-start justify-center">
         <div
             class="relative m-0 h-full flex-1 border-2 border-primary-500 bg-black p-1.5 shadow-[0_0_0_0.10rem] shadow-transparent transition-all duration-500 focus-within:shadow-surface-500 group-hover:border-tertiary-500 group-hover:shadow-surface-500 group-active:border-tertiary-500 group-active:shadow-surface-500">
@@ -71,7 +77,7 @@
             <div>
                 <SortBy
                     class="w-auto"
-                    bind:state={sortState}
+                    bind:value={sortState}
                     options={[
                         { value: 'id', label: 'ID' },
                         { value: 'date', label: 'Date' },

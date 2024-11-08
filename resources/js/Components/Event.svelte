@@ -1,4 +1,6 @@
 <script>
+    import { stopPropagation } from 'svelte/legacy';
+
     import Oddment from '@/lib/oddment.js';
     import isValidUrl from '@/lib/url';
     import route from '@/lib/route';
@@ -15,8 +17,6 @@
         'gently placed': 5,
     });
 
-    export let event;
-
     const formattedDate = new Date(event.date).toLocaleDateString('en-US');
     async function copyLinkClicked() {
         await navigator.clipboard.writeText(route('event.show', event));
@@ -24,8 +24,14 @@
             message: `Event link ${copyVerbs.pick()} into your clipboard.`,
         });
     }
-    let className = '';
-    export { className as class };
+    /**
+     * @typedef {Object} Props
+     * @property {any} event
+     * @property {string} [class]
+     */
+
+    /** @type {Props} */
+    let { event, class: className = '' } = $props();
 </script>
 
 <article id={event.id} class={cn('card', className)}>
@@ -45,7 +51,7 @@
         <div class="flex items-center text-sm text-typo-600">
             <button
                 class="flex hover:underline hover:underline-offset-4"
-                on:click|stopPropagation={copyLinkClicked}>
+                onclick={stopPropagation(copyLinkClicked)}>
                 <Link class="inline" />
                 <span class="pl-1">Link</span>
             </button>

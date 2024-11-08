@@ -11,7 +11,7 @@
     import { useForm } from '@inertiajs/svelte';
     import axios from 'axios';
 
-    export let parent;
+    let { parent } = $props();
 
     const modalStore = getModalStore();
     const toastStore = getToastStore();
@@ -29,12 +29,13 @@
         expires: null,
     });
 
-    let searchInput =
+    let searchInput = $state(
         $modalStore[0].meta.bannable?.username ||
-        $modalStore[0].meta.bannable?.ip ||
-        $modalStore[0].meta.bannable?.id ||
-        '';
-    let searchOptions = [];
+            $modalStore[0].meta.bannable?.ip ||
+            $modalStore[0].meta.bannable?.id ||
+            ''
+    );
+    let searchOptions = $state([]);
     function onInput() {
         if (searchInput) {
             debounce(() => {
@@ -64,7 +65,8 @@
         $form.bannable_id = event.detail.value;
     }
 
-    function submit() {
+    function submit(e) {
+        e.preventDefault();
         $form.post(route('admin.ban'), {
             preserveScroll: true,
             onSuccess: () => modalStore.close(),
@@ -74,17 +76,14 @@
 
 <section class={cn('card', parent.width)}>
     <h3 class="pb-2 font-bold">Create Ban</h3>
-    <form
-        method="POST"
-        on:submit|preventDefault={submit}
-        class="flex flex-col gap-4">
+    <form method="POST" onsubmit={submit} class="flex flex-col gap-4">
         <div class="flex flex-col gap-4">
             <Label for="type">Type</Label>
             <select
                 name="type"
                 class="select"
                 bind:value={$form.type}
-                on:change={() => {
+                onchange={() => {
                     searchInput = '';
                     searchOptions = [];
                 }}>
@@ -102,7 +101,7 @@
                 type="search"
                 name="search"
                 bind:value={searchInput}
-                on:input={onInput}
+                oninput={onInput}
                 use:popup={{
                     event: 'focus-click',
                     target: 'popupAutocomplete',
@@ -138,7 +137,8 @@
                 rows="4"
                 value={$form.reason}
                 required
-                placeholder="Justify your ban reason, this is for internal use." />
+                placeholder="Justify your ban reason, this is for internal use."
+            ></textarea>
             <ErrorMessage message={$form.errors.reason} />
         </div>
         <div class="flex items-center justify-between pt-4">

@@ -35,17 +35,15 @@
     //     $form.sources = [];
     // }
 
-    function submit() {
+    function submit(e) {
+        e.preventDefault();
         $form.post(route('event.store'), { forceFormData: true });
     }
 </script>
 
 <Page header="Create Event">
     <div class="card">
-        <form
-            method="POST"
-            on:submit|preventDefault={submit}
-            class="flex flex-col gap-4">
+        <form method="POST" onsubmit={submit} class="flex flex-col gap-4">
             <div class="block">
                 <Label for="name">Name</Label>
                 <Input
@@ -84,8 +82,9 @@
                     accept="audio/*"
                     bind:files={$form.sources}
                     on:change={fileOnChange}>
-                    <svelte:fragment slot="meta"
-                        >Audio files accepted</svelte:fragment>
+                    {#snippet meta()}
+                        Audio files accepted
+                    {/snippet}
                 </FileDropzone>
                 {#each $form.sources as item, i}
                     <ErrorMessage

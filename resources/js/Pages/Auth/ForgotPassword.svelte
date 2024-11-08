@@ -22,7 +22,8 @@
         recaptcha: null,
     });
 
-    function submit() {
+    function submit(e) {
+        e.preventDefault();
         recaptcha('password/email', (token) => {
             $form.recaptcha = token;
             $form.post(route('password.email'));
@@ -38,7 +39,7 @@
             you to choose a new one.
         </div>
 
-        <form method="POST" on:submit|preventDefault={submit}>
+        <form method="POST" onsubmit={submit}>
             <div>
                 <Label for="email" value="Email" />
                 <Input

@@ -10,13 +10,36 @@
 
     import cn from '@/lib/cn.js';
 
-    export let input = '';
-    export let includeValue = [];
-    export let excludeValue = [];
-    export let availableTags = [];
-    export let required = false;
-    let className = '';
-    export { className as class };
+    /**
+     * @typedef {Object} Props
+     * @property {string} [input]
+     * @property {any} [includeValue]
+     * @property {any} [excludeValue]
+     * @property {any} [availableTags]
+     * @property {boolean} [required]
+     * @property {string} [class]
+     * @property {boolean} [disabled]
+     * @property {any} [oninput]
+     * @property {any} [onkeypress]
+     * @property {any} [onkeydown]
+     * @property {any} [onkeyup]
+     */
+
+    /** @type {Props & { [key: string]: any }} */
+    let {
+        input = $bindable(''),
+        includeValue = $bindable([]),
+        excludeValue = $bindable([]),
+        availableTags = [],
+        required = false,
+        class: className = '',
+        disabled = false,
+        oninput,
+        onkeypress,
+        onkeydown,
+        onkeyup,
+        ...rest
+    } = $props();
 
     let duration = 150;
 
@@ -27,8 +50,8 @@
         placement: 'bottom',
     };
 
-    let inputValid = true;
-    let chipValues = [
+    let inputValid = $state(true);
+    let chipValues = $state([
         ...(includeValue || []).map((val) => ({
             val: val,
             id: Math.random(),
@@ -39,7 +62,7 @@
             id: Math.random(),
             include: false,
         })),
-    ];
+    ]);
 
     function safeAnimate(node, options) {
         if (!$prefersReducedMotionStore) {
@@ -52,7 +75,7 @@
         includeValue = [];
         excludeValue = [];
     }
-    let includeSelectElement;
+    let includeSelectElement = $state();
     onMount(() => {
         // Verify external form is present
         if (!includeSelectElement.form) return;
@@ -66,6 +89,7 @@
 
     function onInputHandler() {
         inputValid = true;
+        oninput();
     }
 
     function validateInTags(chip) {
@@ -134,7 +158,7 @@
     }
 
     function onChipClick(val) {
-        if ($$restProps.disabled) return;
+        if (disabled) return;
         if (excludeValue.includes(val)) {
             removeChipCommon(val, false);
             return;
@@ -154,7 +178,7 @@
             'input-chip textarea cursor-pointer p-2 rounded-container-token',
             !inputValid && 'input-error'
         )}
-        class:opacity-50={$$restProps.disabled}>
+        class:opacity-50={disabled}>
         <!-- NOTE: Don't use `hidden` as it prevents `required` from operating -->
         <div class="h-0 overflow-hidden">
             <select
@@ -184,18 +208,16 @@
         <!-- Chip Wrapper -->
         <div class="input-chip-wrapper space-y-4">
             <!-- Input Field -->
-            <form on:submit={onSubmit}>
+            <form onsubmit={onSubmit}>
                 <input
                     type="text"
                     bind:value={input}
                     placeholder="Filter Tags..."
                     class="input-chip-field autocomplete unstyled w-full border-0 bg-transparent p-0 !ring-0"
-                    on:input={onInputHandler}
-                    on:input
-                    on:focus
-                    on:blur
-                    disabled={$$restProps.disabled}
-                    use:popup={popupSettings} />
+                    oninput={onInputHandler}
+                    {disabled}
+                    use:popup={popupSettings}
+                    {...rest} />
             </form>
             <!-- Chip List -->
             {#if chipValues.length}
@@ -224,10 +246,10 @@
                                         ? 'variant-filled'
                                         : 'variant-filled-error'
                                 )}
-                                on:click={() => onChipClick(val)}
-                                on:keypress
-                                on:keydown
-                                on:keyup
+                                onclick={() => onChipClick(val)}
+                                {onkeypress}
+                                {onkeydown}
+                                {onkeyup}
                                 in:safeAnimate|local={{
                                     fn: scale,
                                     duration,

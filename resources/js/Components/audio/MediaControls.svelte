@@ -45,14 +45,14 @@
 </script>
 
 <div class="flex w-full justify-between">
-    <div class="w-1/6" />
+    <div class="w-1/6"></div>
     <div class="align-center flex justify-center gap-2">
         {#each controls as control}
             <IconButton
                 title={control.title}
                 on:click={() => dispatch(...control.event)}
                 {...control.variant}>
-                <svelte:component this={control.icon} />
+                <control.icon />
             </IconButton>
         {/each}
     </div>
@@ -60,13 +60,13 @@
         <button
             title="create a segment"
             class="hover:text-typo-600"
-            on:click={() => dispatch('zoom', false)}>
+            onclick={() => dispatch('zoom', false)}>
             <MagnifyingGlassMinus />
         </button>
         <button
             title="create a segment"
             class="hover:text-typo-600"
-            on:click={() => dispatch('zoom', true)}>
+            onclick={() => dispatch('zoom', true)}>
             <MagnifyingGlassPlus />
         </button>
     </div>

@@ -9,6 +9,8 @@
         Github,
         Gnome,
     } from '@/Components/icons';
+    /** @type {{ [key: string]: any }} */
+    let { ...props } = $props();
 
     const links = [
         {
@@ -30,7 +32,7 @@
     ];
 </script>
 
-<div {...$$restProps} class={`w-full bg-surface-500 p-5 ${$$props.class}`}>
+<div {...props} class={`w-full bg-surface-500 p-5 ${props.class}`}>
     <div class="sm:mx-auto sm:flex sm:items-center sm:justify-between">
         <nav
             class="flex items-center justify-between gap-2 text-sm text-on-surface-token sm:text-center">
@@ -43,7 +45,7 @@
         <nav class="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
             {#each links as link}
                 <FooterIcon href={link.href}>
-                    <svelte:component this={link.icon} />
+                    <link.icon />
                 </FooterIcon>
             {/each}
         </nav>
