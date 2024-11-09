@@ -20,7 +20,7 @@
     } = $props();
 </script>
 
-<section class={cn('container mx-auto my-4 h-full px-4', className)}>
+<article class={cn('container mx-auto my-4 h-full px-4', className)}>
     {#if !!header}
         {#if typeof header === 'string'}
             {#if edit}
@@ -37,4 +37,4 @@
         <hr />
     {/if}
     {@render children?.()}
-</section>
+</article>

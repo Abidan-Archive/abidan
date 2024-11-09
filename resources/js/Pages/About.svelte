@@ -25,7 +25,7 @@
             This site is maintained and built by the Will Wight fanbase and
             community.
         </p>
-        <p>It's main contributors are:</p>
+        <p>It's contributors are:</p>
         <ul class="list-disc pl-5">
             <li>🍑 - pchpchpchpch</li>
             <li>Entropy - Decadakon</li>
@@ -78,10 +78,10 @@
 
 <style lang="scss">
     section {
-        @apply mb-4;
+        @apply pb-4;
     }
     p {
-        @apply mb-2;
+        @apply pb-2;
     }
     a {
         @apply underline;
