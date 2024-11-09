@@ -11,7 +11,8 @@
     @vite('resources/js/app.js')
     @inertiaHead
   </head>
-  <body data-theme="abidan">
+  {{-- Set background twice, one for ref, style is there so body is dark while app boots when ssr down --}}
+  <body data-theme="abidan" class="bg-surface-900" style="background-color: rgb(13, 19, 26);">
     <div style="display: contents" class="h-full overflow-hidden">
         @inertia
     </div>
