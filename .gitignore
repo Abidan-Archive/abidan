@@ -7,6 +7,7 @@ _ide_helper*
 /storage/*.key
 /vendor
 .env
+.env.prod
 .env.backup
 .phpunit.result.cache
 .eslintcache

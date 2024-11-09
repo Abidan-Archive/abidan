@@ -14,9 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      - uses: pnpm/action-setup@v4
 
       - name: Configure PHP 8.3
         uses: shivammathur/setup-php@v2
@@ -41,7 +39,7 @@ jobs:
       - name: Create deployment artifact
         env:
           GITHUB_SHA: ${{ github.sha }}
-        run: tar -czf "${GITHUB_SHA}".tar.gz --exclude=*.git --exclude=tests --exclude=storage --exclude=nixos *
+        run: tar -czf "${GITHUB_SHA}".tar.gz --exclude=*.git --exclude=tests --exclude=storage *
 
       - name: Store artifact for distribution
         uses: actions/upload-artifact@v4
@@ -131,7 +129,7 @@ jobs:
             ln -s -f ${BASE_PATH}/.env $RELEASE_PATH
             ln -s -f $STORAGE_PATH $RELEASE_PATH
             ln -s -n -f $RELEASE_PATH $ACTIVE_RELEASE_PATH
-            sudo systemctl reload php8.3-fpm
+            sudo systemctl reload phpfpm-abidan.service
 
   run-after-hooks:
     name: After hook
