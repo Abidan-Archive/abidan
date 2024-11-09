@@ -1,6 +1,4 @@
 <script>
-    import { stopPropagation } from 'svelte/legacy';
-
     import Oddment from '@/lib/oddment.js';
     import isValidUrl from '@/lib/url';
     import route from '@/lib/route';
@@ -50,8 +48,9 @@
         </div>
         <div class="flex items-center text-sm text-typo-600">
             <button
+                type="button"
                 class="flex hover:underline hover:underline-offset-4"
-                onclick={stopPropagation(copyLinkClicked)}>
+                onclick={copyLinkClicked}>
                 <Link class="inline" />
                 <span class="pl-1">Link</span>
             </button>
