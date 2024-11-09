@@ -33,8 +33,7 @@ jobs:
 
       - name: Compile CSS and Javascript
         run: |
-          npm ci
-          npm run build
+          pnpm build
 
       - name: Create deployment artifact
         env:
@@ -70,13 +69,15 @@ jobs:
         uses: appleboy/ssh-action@master
         env:
           GITHUB_SHA: ${{ github.sha }}
+          ACTIVE_RELEASE_PATH: ${{ vars.HOST_PATH }}/current
         with:
           host: ${{ vars.HOST_IP }}
           username: ${{ secrets.HOST_USER }}
           key: ${{ secrets.HOST_KEY }}
           envs: GITHUB_SHA
           script: |
-            mkdir -p "${{ vars.HOST_PATH }}/releases/${GITHUB_SHA}"
+            mkdir -p $ACTIVE_RELEASE_PATH
+            mkdir -p ${{ vars.HOST_PATH }}/releases/${GITHUB_SHA}
             tar -xzf ${{ vars.HOST_PATH }}/artifacts/${GITHUB_SHA}.tar.gz -C "${{ vars.HOST_PATH}}/releases/${GITHUB_SHA}"
             rm -rf ${{ vars.HOST_PATH }}/releases/${GITHUB_SHA}/storage
             mkdir -p ${{ vars.HOST_PATH }}/storage/{app,public,framework,logs}
@@ -118,15 +119,14 @@ jobs:
           ACTIVE_RELEASE_PATH: ${{ vars.HOST_PATH }}/current
           STORAGE_PATH: ${{ vars.HOST_PATH }}/storage
           BASE_PATH: ${{ vars.HOST_PATH }}
-          LARAVEL_ENV: ${{ secrets.LARAVEL_ENV }}
         with:
           host: ${{ vars.HOST_IP }}
           username: ${{ secrets.HOST_USER }}
           key: ${{ secrets.HOST_KEY }}
           envs: GITHUB_SHA,RELEASE_PATH,ACTIVE_RELEASE_PATH,STORAGE_PATH,BASE_PATH,ENV_PATH,LARAVEL_ENV
           script: |
-            printf "%s" "$LARAVEL_ENV" > "${BASE_PATH}/.env"
-            ln -s -f ${BASE_PATH}/.env $RELEASE_PATH
+            cd $RELEASE_PATH
+            LARAVEL_ENV_ENCRYPTION_KEY="$(echo /run/secrets/ENV_KEY)" php artisan env:decrypt --env=prod
             ln -s -f $STORAGE_PATH $RELEASE_PATH
             ln -s -n -f $RELEASE_PATH $ACTIVE_RELEASE_PATH
             sudo systemctl reload phpfpm-abidan.service
