@@ -93,8 +93,8 @@
                 </div>
             </div>
         </form>
-        <hr />
-        <div class="flex flex-col items-center gap-2">
+        <hr class="divider hidden" />
+        <div class="flex hidden flex-col items-center gap-2">
             <p>Sign in with a third-party provider</p>
             <Button3D href={route('oauth.discord')} themeDeg="235deg">
                 <DiscordLogo />
