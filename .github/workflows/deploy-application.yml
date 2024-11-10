@@ -69,14 +69,13 @@ jobs:
         uses: appleboy/ssh-action@master
         env:
           GITHUB_SHA: ${{ github.sha }}
-          ACTIVE_RELEASE_PATH: ${{ vars.HOST_PATH }}/current
         with:
           host: ${{ vars.HOST_IP }}
           username: ${{ secrets.HOST_USER }}
           key: ${{ secrets.HOST_KEY }}
           envs: GITHUB_SHA
           script: |
-            mkdir -p $ACTIVE_RELEASE_PATH
+            mkdir -p ${{ vars.HOST_PATH }}/{current,releases}
             mkdir -p ${{ vars.HOST_PATH }}/releases/${GITHUB_SHA}
             tar -xzf ${{ vars.HOST_PATH }}/artifacts/${GITHUB_SHA}.tar.gz -C "${{ vars.HOST_PATH}}/releases/${GITHUB_SHA}"
             rm -rf ${{ vars.HOST_PATH }}/releases/${GITHUB_SHA}/storage
@@ -104,7 +103,7 @@ jobs:
           envs: GITHUB_SHA, BASE_PATH, RELEASE_PATH, ACTIVE_RELEASE_PATH, STORAGE_PATH
           script: |
             cd $ACTIVE_RELEASE_PATH
-            ${{ vars.beforeHooks }}
+            php artisan migrate --force
 
   activate-release:
     name: Activate release
@@ -151,7 +150,10 @@ jobs:
           envs: GITHUB_SHA,RELEASE_PATH,ACTIVE_RELEASE_PATH,STORAGE_PATH,BASE_PATH,ENV_PATH
           script: |
             cd $ACTIVE_RELEASE_PATH
-            ${{ vars.afterHooks }}
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            php artisan inertia:stop-ssr
 
   clean-up:
     name: Clean up
