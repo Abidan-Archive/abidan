@@ -14,37 +14,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-
       - name: Configure PHP 8.3
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
           extensions: ctype, curl, DOM, fileinfo, filter, hash, json, mbstring, openssl, PCRE, PDO, session, tokenizer, xml
-
       - name: Install Composer dependencies
-        run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+        run: composer install --optimize-autoloader --no-dev --no-progress --no-interaction --prefer-dist
 
       - name: Generate frontend routes file
         env:
-          APP_URL: http://${{ vars.HOST_IP }}
+          APP_URL: https://${{ vars.DOMAIN }}
         run: |
           php artisan ziggy:generate
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: true
 
       - name: Compile CSS and Javascript
         run: |
           pnpm build
 
       - name: Create deployment artifact
-        env:
-          GITHUB_SHA: ${{ github.sha }}
-        run: tar -czf "${GITHUB_SHA}".tar.gz --exclude=*.git --exclude=tests --exclude=storage *
+        run: |
+          mkdir -p /tmp/artifact
+          tar -czf /tmp/artifact/${{ github.sha }}.tar.gz --exclude=*.git --exclude=tests --exclude=storage --exclude=bin --exclude=docker .
 
       - name: Store artifact for distribution
         uses: actions/upload-artifact@v4
         with:
           name: app-build
-          path: ${{ github.sha }}.tar.gz
+          path: /tmp/artifact/${{ github.sha }}.tar.gz
 
   prepare-release-on-server:
     name: Prepare release
@@ -58,14 +62,14 @@ jobs:
       - name: Upload
         uses: burnett01/rsync-deployments@6.0.0
         with:
-          switches: --mkPath
-          path: ${{ github.sha }}.tar.gz
-          remote_path: ${{ vars.HOST_PATH }}/artifacts
           remote_host: ${{ vars.HOST_IP }}
           remote_user: ${{ secrets.HOST_USER }}
           remote_key: ${{ secrets.HOST_KEY }}
+          remote_path: ${{ vars.DATA_DIR}}/artifacts
+          switches: "--ipv4"
+          path: ${{github.sha}}.tar.gz
 
-      - name: Extract archive and create directories
+      - name: Extract archive and manage storage
         uses: appleboy/ssh-action@master
         env:
           GITHUB_SHA: ${{ github.sha }}
@@ -75,13 +79,10 @@ jobs:
           key: ${{ secrets.HOST_KEY }}
           envs: GITHUB_SHA
           script: |
-            mkdir -p ${{ vars.HOST_PATH }}/{current,releases}
-            mkdir -p ${{ vars.HOST_PATH }}/releases/${GITHUB_SHA}
-            tar -xzf ${{ vars.HOST_PATH }}/artifacts/${GITHUB_SHA}.tar.gz -C "${{ vars.HOST_PATH}}/releases/${GITHUB_SHA}"
-            rm -rf ${{ vars.HOST_PATH }}/releases/${GITHUB_SHA}/storage
-            mkdir -p ${{ vars.HOST_PATH }}/storage/{app,public,framework,logs}
-            mkdir -p ${{ vars.HOST_PATH }}/storage/framework/{cache,sessions,testing,views}
-            sudo chmod -R 0777 ${{ vars.HOST_PATH }}/storage
+            set -e
+            mkdir -p ${{ vars.DATA_DIR }}/releases/${GITHUB_SHA}
+            tar -xzf ${{ vars.DATA_DIR }}/artifacts/${GITHUB_SHA}.tar.gz -C ${{ vars.DATA_DIR}}/releases/${GITHUB_SHA}
+            rm -rf ${{ vars.DATA_DIR }}/releases/${GITHUB_SHA}/storage
 
   run-before-hooks:
     name: Before hook
@@ -92,17 +93,16 @@ jobs:
         uses: appleboy/ssh-action@master
         env:
           GITHUB_SHA: ${{ github.sha }}
-          BASE_PATH: ${{ vars.HOST_PATH }}
-          RELEASE_PATH: ${{ vars.HOST_PATH }}/releases/${{ github.sha }}
-          ACTIVE_RELEASE_PATH: ${{ vars.HOST_PATH }}/current
-          STORAGE_PATH: ${{ vars.HOST_PATH }}/storage
         with:
           host: ${{ vars.HOST_IP }}
           username: ${{ secrets.HOST_USER }}
           key: ${{ secrets.HOST_KEY }}
-          envs: GITHUB_SHA, BASE_PATH, RELEASE_PATH, ACTIVE_RELEASE_PATH, STORAGE_PATH
+          envs: GITHUB_SHA
           script: |
-            cd $ACTIVE_RELEASE_PATH
+            set -e
+            cd ${{ vars.DATA_DIR }}/releases/${GITHUB_SHA}
+            php artisan env:decrypt --env=prod --key="$(cat /run/secrets/ENV_KEY)"
+            mv .env.prod .env
             php artisan migrate --force
 
   activate-release:
@@ -113,22 +113,23 @@ jobs:
       - name: Activate release
         uses: appleboy/ssh-action@master
         env:
-          GITHUB_SHA: ${{ github.sha }}
-          RELEASE_PATH: ${{ vars.HOST_PATH }}/releases/${{ github.sha }}
-          ACTIVE_RELEASE_PATH: ${{ vars.HOST_PATH }}/current
-          STORAGE_PATH: ${{ vars.HOST_PATH }}/storage
-          BASE_PATH: ${{ vars.HOST_PATH }}
+          RELEASE_PATH: ${{ vars.DATA_DIR }}/releases/${{ github.sha }}
+          ACTIVE_RELEASE_PATH: ${{ vars.DATA_DIR }}/current
+          STORAGE_PATH: ${{ vars.DATA_DIR }}/storage
+          BASE_PATH: ${{ vars.DATA_DIR }}
+          APP: ${{ vars.PHPFPM_USER }}
         with:
           host: ${{ vars.HOST_IP }}
           username: ${{ secrets.HOST_USER }}
           key: ${{ secrets.HOST_KEY }}
-          envs: GITHUB_SHA,RELEASE_PATH,ACTIVE_RELEASE_PATH,STORAGE_PATH,BASE_PATH,ENV_PATH,LARAVEL_ENV
+          envs: APP,RELEASE_PATH,ACTIVE_RELEASE_PATH,STORAGE_PATH,BASE_PATH,ENV_PATH
           script: |
-            cd $RELEASE_PATH
-            LARAVEL_ENV_ENCRYPTION_KEY="$(echo /run/secrets/ENV_KEY)" php artisan env:decrypt --env=prod
-            ln -s -f $STORAGE_PATH $RELEASE_PATH
-            ln -s -n -f $RELEASE_PATH $ACTIVE_RELEASE_PATH
-            sudo systemctl reload phpfpm-abidan.service
+            ln -snf $STORAGE_PATH $RELEASE_PATH/storage
+            echo "${{ secrets.HOST_PASS }}" | sudo -S chmod -R 755 -R $RELEASE_PATH/*
+            echo "${{ secrets.HOST_PASS }}" | sudo -S chmod -R 775 -R $STORAGE_PATH
+            echo "${{ secrets.HOST_PASS }}" | sudo -S chown -R $APP:$APP $ACTIVE_RELEASE_PATH
+            ln -snf $RELEASE_PATH $ACTIVE_RELEASE_PATH
+            echo "${{ secrets.HOST_PASS }}" | sudo -S systemctl reload phpfpm-abidan.service
 
   run-after-hooks:
     name: After hook
@@ -138,16 +139,12 @@ jobs:
       - name: Run after hooks
         uses: appleboy/ssh-action@master
         env:
-          GITHUB_SHA: ${{ github.sha }}
-          RELEASE_PATH: ${{ vars.HOST_PATH }}/releases/${{ github.sha }}
-          ACTIVE_RELEASE_PATH: ${{ vars.HOST_PATH }}/current
-          STORAGE_PATH: ${{ vars.HOST_PATH }}/storage
-          BASE_PATH: ${{ vars.HOST_PATH }}
+          ACTIVE_RELEASE_PATH: ${{ vars.DATA_DIR }}/current
         with:
           host: ${{ vars.HOST_IP }}
           username: ${{ secrets.HOST_USER }}
           key: ${{ secrets.HOST_KEY }}
-          envs: GITHUB_SHA,RELEASE_PATH,ACTIVE_RELEASE_PATH,STORAGE_PATH,BASE_PATH,ENV_PATH
+          envs: ACTIVE_RELEASE_PATH
           script: |
             cd $ACTIVE_RELEASE_PATH
             php artisan config:cache
@@ -163,8 +160,8 @@ jobs:
       - name: Removing old releases and artifacts
         uses: appleboy/ssh-action@master
         env:
-          RELEASES_PATH: ${{ vars.HOST_PATH }}/releases
-          ARTIFACTS_PATH: ${{ vars.HOST_PATH }}/artifacts
+          RELEASES_PATH: ${{ vars.DATA_DIR }}/releases
+          ARTIFACTS_PATH: ${{ vars.DATA_DIR }}/artifacts
         with:
           host: ${{ vars.HOST_IP }}
           username: ${{ secrets.HOST_USER }}
