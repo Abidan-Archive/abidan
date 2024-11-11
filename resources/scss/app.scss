@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    html, body, #app {
+        @apply h-full overflow-hidden;
+    }
+    body {
+        @apply text-token bg-surface-900 antialiased;
+    }
+    hr {
+        @apply mb-4 mt-2 !border-surface-400;
+    }
+    main a {
+        @apply text-surface-100 underline hover:text-surface-300;
+    }
+    .grecaptcha-badge {
+        visibility: hidden;
+    }
+}
 @layer components {
     .card {
         @apply w-full;

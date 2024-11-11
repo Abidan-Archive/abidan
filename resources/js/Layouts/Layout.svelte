@@ -81,21 +81,3 @@
         <Footer />
     {/snippet}
 </AppShell>
-
-<style @global lang="postcss">
-    :global(html, body, #app) {
-        @apply h-full overflow-hidden;
-    }
-    :global(body) {
-        @apply text-token bg-surface-900 antialiased;
-    }
-    :global(hr) {
-        @apply mb-4 mt-2 !border-surface-400;
-    }
-    :global(main a) {
-        @apply text-surface-100 underline hover:text-surface-300;
-    }
-    :global(.grecaptcha-badge) {
-        visibility: hidden;
-    }
-</style>
