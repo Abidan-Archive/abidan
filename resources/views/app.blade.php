@@ -1,4 +1,3 @@
-@includeWhen(App::isProduction(), 'gnome')
 <!DOCTYPE html>
 <html class="dark">
   <head>
