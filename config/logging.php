@@ -3,6 +3,10 @@
 return [
 
     'channels' => [
+        'stack' => [
+            'driver' => 'stack',
+            'channels' => ['single', 'discord']
+        ],
         'ban' => [
             'driver' => 'stack',
             'channels' => ['single', 'discord'],
