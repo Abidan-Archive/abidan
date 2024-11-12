@@ -1,7 +1,7 @@
 <script>
     import Page from '@/Components/Page.svelte';
     import { cn, route, recaptcha } from '@/lib';
-    import { ErrorMessage, Label, Button, Input } from '@/Components/forms';
+    import { Button, Field } from '@/Components/forms';
     import { useForm, inertia } from '@inertiajs/svelte';
 
     let form = useForm('Register', {
@@ -22,70 +22,29 @@
     }
 </script>
 
-<Page class="w-1/2" header="Register">
+<Page class="w-full md:w-1/2" header="Register">
     <div class="card">
-        <form method="POST" onsubmit={submit}>
-            <div>
-                <Label for="username" value="Username" />
-                <Input
-                    id="username"
-                    class="mt-1 block w-full"
-                    name="username"
-                    bind:value={$form.username}
-                    required
-                    autofocus />
-                <ErrorMessage message={$form.errors.username} class="mt-2" />
-            </div>
-            <div class="mt-4">
-                <Label for="email" value="Email" />
-                <Input
-                    id="email"
-                    class="mt-1 block w-full"
-                    type="email"
-                    name="email"
-                    bind:value={$form.email}
-                    required />
-                <ErrorMessage message={$form.errors.email} class="mt-2" />
-            </div>
-            <div class="mt-4">
-                <Label for="email_confirmation" value="Confirm Email" />
-                <Input
-                    id="email_confirmation"
-                    class="mt-1 block w-full"
-                    type="email"
-                    name="email_confirmation"
-                    bind:value={$form.email_confirmation}
-                    required />
-                <ErrorMessage
-                    message={$form.errors.email_confirmation}
-                    class="mt-2" />
-            </div>
-            <div class="mt-4">
-                <Label for="password" value="Password" />
-                <Input
-                    id="password"
-                    class="mt-1 block w-full"
-                    type="password"
-                    name="password"
-                    bind:value={$form.password}
-                    required
-                    autocomplete="new-password" />
-                <ErrorMessage message={$form.errors.password} class="mt-2" />
-            </div>
-            <div class="mt-4">
-                <Label for="password_confirmation" value="Confirm Password" />
-                <Input
-                    id="password_confirmation"
-                    class="mt-1 block w-full"
-                    type="password"
-                    name="password_confirmation"
-                    bind:value={$form.password_confirmation}
-                    required />
-                <ErrorMessage
-                    message={$form.errors.password_confirmation}
-                    class="mt-2" />
-            </div>
-            <div class="mt-4 flex items-center justify-end">
+        <form method="POST" onsubmit={submit} class="flex flex-col gap-4">
+            <Field {form} name="username" required autofocus recaptcha />
+            <Field {form} name="email" required />
+            <Field
+                {form}
+                name="email_confirmation"
+                label="Confirm Email"
+                required />
+
+            <Field
+                {form}
+                name="password"
+                type="password"
+                required
+                autocomplete="new-password" />
+            <Field
+                {form}
+                name="password_confirmation"
+                type="password"
+                label="Confirm Password" />
+            <div class="flex items-center justify-end gap-2">
                 <a
                     use:inertia
                     href={route('login')}
@@ -96,7 +55,7 @@
                     Already registered?
                 </a>
 
-                <Button class="ml-4">Register</Button>
+                <Button>Register</Button>
             </div>
         </form>
     </div>

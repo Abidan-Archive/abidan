@@ -5,7 +5,7 @@
     import DiscordLogo from '@/Components/DiscordLogo.svelte';
     import Page from '@/Components/Page.svelte';
     import { cn, recaptcha, route } from '@/lib';
-    import { ErrorMessage, Label, Button, Input } from '@/Components/forms';
+    import { Button, Field, Label } from '@/Components/forms';
 
     let form = useForm({
         email: null,
@@ -25,34 +25,18 @@
 
 <Page class="w-full md:w-1/2" header="Login">
     <div class="card">
-        <form method="POST" onsubmit={submit}>
+        <form method="POST" onsubmit={submit} class="flex flex-col gap-4">
+            <Field {form} name="email" autofocus required recaptcha />
+
+            <Field
+                {form}
+                name="password"
+                type="password"
+                required
+                autocomplete="current-password" />
+
             <div>
-                <Label for="email">Email</Label>
-                <Input
-                    id="email"
-                    name="email"
-                    bind:value={$form.email}
-                    class="mt-1 block w-full"
-                    required
-                    autofocus />
-                <ErrorMessage message={$form.errors.email} class="mt-2" />
-            </div>
-
-            <div class="mt-4">
-                <Label for="password">Password</Label>
-                <Input
-                    id="password"
-                    type="password"
-                    name="password"
-                    bind:value={$form.password}
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="current-password" />
-                <ErrorMessage message={$form.errors.password} class="mt-2" />
-            </div>
-
-            <div class="mt-4">
-                <Label for="remember_me" class="inline-flex items-center">
+                <Label for="remember_me" class="inline-flex items-center gap-2">
                     <input
                         id="remember_me"
                         type="checkbox"
@@ -62,11 +46,11 @@
                         )}
                         bind:checked={$form.remember}
                         name="remember" />
-                    <span class="ml-2 text-sm text-gray-400">Remember Me</span>
+                    <span class="text-sm text-gray-400">Remember Me</span>
                 </Label>
             </div>
 
-            <div class="mt-4 flex items-baseline justify-between">
+            <div class="flex items-baseline justify-between">
                 <a
                     use:inertia
                     href={route('register')}
@@ -76,7 +60,7 @@
                     )}>
                     Sign up
                 </a>
-                <div class="flex items-baseline justify-end">
+                <div class="flex items-baseline justify-end gap-2">
                     {#if route().has('password.request')}
                         <a
                             use:inertia
@@ -89,12 +73,12 @@
                         </a>
                     {/if}
 
-                    <Button class="ml-3">Log in</Button>
+                    <Button>Log in</Button>
                 </div>
             </div>
         </form>
-        <hr class="divider hidden" />
-        <div class="flex hidden flex-col items-center gap-2">
+        <hr class="divider" />
+        <div class="flex flex-col items-center gap-2">
             <p>Sign in with a third-party provider</p>
             <Button3D href={route('oauth.discord')} themeDeg="235deg">
                 <DiscordLogo />

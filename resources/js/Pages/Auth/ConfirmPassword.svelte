@@ -2,7 +2,7 @@
     import Page from '@/Components/Page.svelte';
     import route from '@/lib/route';
     import recaptcha from '@/lib/recaptcha';
-    import { ErrorMessage, Label, Button, Input } from '@/Components/forms';
+    import { Field, Button } from '@/Components/forms';
     import { useForm } from '@inertiajs/svelte';
 
     let form = useForm({
@@ -19,27 +19,21 @@
     }
 </script>
 
-<Page class="w-1/2" header="Confirm Password">
+<Page class="w-full md:w-1/2" header="Confirm Password">
     <div class="card">
-        <div class="mb-4 text-sm text-gray-400">
-            This is a secure area of the application. Please confirm password
-            before continuing.
-        </div>
-        <form method="POST" onsubmit={submit}>
-            <div>
-                <Label for="password" value="Password" />
-                <Input
-                    id="password"
-                    class="mt-1 block w-full"
-                    type="password"
-                    name="password"
-                    required
-                    bind:value={$form.password}
-                    autocomplete="current-password" />
-                <ErrorMessage message={$form.errors.password} class="mt-2" />
+        <form method="POST" onsubmit={submit} class="flex flex-col gap-4">
+            <div class="text-sm text-gray-400">
+                This is a secure area of the application. Please confirm
+                password before continuing.
             </div>
+            <Field
+                {form}
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                recaptcha />
 
-            <div class="mt-4 flex justify-end">
+            <div class="flex justify-end">
                 <Button>Confirm</Button>
             </div>
         </form>

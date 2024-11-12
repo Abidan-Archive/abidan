@@ -14,22 +14,22 @@
     }
 </script>
 
-<Page class="w-1/2" header="Email Verification">
-    <div class="card">
-        <div class="mb-4 text-sm text-gray-400">
+<Page class="w-full md:w-1/2" header="Email Verification">
+    <div class="card flex flex-col gap-4">
+        <div class="text-sm text-gray-400">
             Thanks for signing up! Before getting started, could you verify your
             email address by clicking on the link we just emailed to you? If you
             didn't receive the email, we will gladly send you another.
         </div>
 
         {#if $page.props.status == 'verification-link-sent'}
-            <div class="mb-4 text-sm font-medium text-green-400">
+            <div class="text-sm font-medium text-green-400">
                 A new verification link as been sent to the email address you
                 provided during registration.
             </div>
         {/if}
 
-        <div class="mt-4 flex items-center justify-between">
+        <div class="flex items-center justify-between">
             <form method="POST" onsubmit={resend}>
                 <div>
                     <Button>Resend Verification Email</Button>

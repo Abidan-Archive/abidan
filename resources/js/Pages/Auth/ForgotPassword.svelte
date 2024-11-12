@@ -1,7 +1,7 @@
 <script>
     import Page from '@/Components/Page.svelte';
     import route from '@/lib/route';
-    import { ErrorMessage, Label, Button, Input } from '@/Components/forms';
+    import { Field, Button } from '@/Components/forms';
     import { useForm, page } from '@inertiajs/svelte';
     import { onMount } from 'svelte';
     import recaptcha from '@/lib/recaptcha';
@@ -33,27 +33,22 @@
 
 <Page class="w-1/2" header="Forgot Password">
     <div class="card">
-        <div class="mb-4 text-sm text-gray-400">
-            Forgot your password? No problem. Just let us know your email
-            address and we will email you a password reset link that will allow
-            you to choose a new one.
-        </div>
-
-        <form method="POST" onsubmit={submit}>
-            <div>
-                <Label for="email" value="Email" />
-                <Input
-                    id="email"
-                    class="mt-1 block w-full"
-                    type="email"
-                    name="email"
-                    required
-                    bind:value={$form.email}
-                    autofocus />
-                <ErrorMessage message={$form.errors.email} class="mt-2" />
+        <form method="POST" onsubmit={submit} class="flex flex-col gap-4">
+            <div class="text-sm text-gray-400">
+                Forgot your password? No problem. Just let us know your email
+                address and we will email you a password reset link that will
+                allow you to choose a new one.
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
+            <Field
+                {form}
+                name="email"
+                type="email"
+                required
+                autofocus
+                recaptcha />
+
+            <div class="flex items-center justify-end">
                 <Button>Email Password Reset Link</Button>
             </div>
         </form>
