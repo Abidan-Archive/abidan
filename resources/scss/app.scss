@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.grecaptcha-badge {
+    visibility: hidden;
+}
+
 @layer base {
     html, body, #app {
         @apply h-full overflow-hidden;
@@ -14,9 +18,6 @@
     }
     main a {
         @apply text-surface-100 underline hover:text-surface-300;
-    }
-    .grecaptcha-badge {
-        visibility: hidden;
     }
 }
 @layer components {
