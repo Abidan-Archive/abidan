@@ -18,6 +18,7 @@
         "laravel/socialite": "^5.11",
         "laravel/tinker": "^2.9",
         "league/commonmark": "^2.3",
+        "mailersend/laravel-driver": "^2.7",
         "marvinlabs/laravel-discord-logger": "^1.4",
         "meilisearch/meilisearch-php": "^1.5",
         "socialiteproviders/discord": "^4.2",
