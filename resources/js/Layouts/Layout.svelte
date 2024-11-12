@@ -36,13 +36,14 @@
     const flashType = {
         success: 'variant-filled-success',
         error: 'variant-filled-error',
-        warn: 'variant-filled-warn',
+        warn: 'variant-filled-warning',
     };
 
     const toastStore = getToastStore();
     $page.props.flash &&
         toastStore.trigger({
             ...{ background: flashType[$page.props.flash?.type || 'success'] },
+            autohide: !!$page.props.flash?.timeout,
             ...$page.props.flash,
         });
 

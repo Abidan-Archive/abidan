@@ -12,7 +12,7 @@ use Laravel\Socialite\Facades\Socialite;
 
 class OAuthController extends Controller
 {
-    private function redirectWithError(string $message): RedirectResponse
+    private function redirectWithError(string $message = null): RedirectResponse
     {
         return to_route('login')->with('flash', [
             'message' => $message ?? __('auth.oauth.error'),
