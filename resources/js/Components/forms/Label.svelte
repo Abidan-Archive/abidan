@@ -1,4 +1,5 @@
 <script>
+    import cn from '@/lib/cn';
     /**
      * @typedef {Object} Props
      * @property {any} [value]
@@ -19,7 +20,7 @@
 
 <label
     for={forInput}
-    class={`block text-sm font-medium text-gray-300 ${className}`}
+    class={cn('block text-sm font-medium text-gray-300', className)}
     {...rest}>
     {#if !!value}
         {value}
