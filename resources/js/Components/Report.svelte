@@ -17,7 +17,9 @@
     /** @type {Props} */
     let { class: className = '', withEvent = true, report } = $props();
 
-    const formattedDate = new Date(report.date).toLocaleDateString('en-US');
+    const formattedDate = $derived(
+        new Date(report.date).toLocaleDateString('en-US')
+    );
     const removeVerbs = new Oddment({
         murdered: 1,
         removed: 30,
