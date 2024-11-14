@@ -138,6 +138,14 @@ return [
             Report::class => [
                 'filterableAttributes' => ['tags'],
                 'sortableAttributes' => ['id', 'date', 'likes'],
+                'rankingRules' => [
+                    'words',
+                    'sort',
+                    'typo',
+                    'proximity',
+                    'attribute',
+                    'exactness'
+                ],
             ],
         ],
     ],
