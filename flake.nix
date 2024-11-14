@@ -49,6 +49,9 @@
                 vscode-langservers-extracted
                 emmet-language-server
                 nodePackages.intelephense
+                # nodePackages.svelte-language-server
+                nodePackages.prettier
+                # eslint_d
               ];
 
               env.DIRENV_LOG_FORMAT = "";
