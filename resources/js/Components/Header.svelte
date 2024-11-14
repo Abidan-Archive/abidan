@@ -39,7 +39,8 @@
     {#snippet lead()}
         <button
             class="btn-icon btn-sm !bg-transparent"
-            onclick={openLeftNavSidebar}>
+            onclick={openLeftNavSidebar}
+            aria-label="open navigation menu">
             <Hamburger />
         </button>
     {/snippet}

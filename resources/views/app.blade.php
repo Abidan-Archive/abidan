@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html class="dark">
+<html class="dark" lang="en-US">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <script src="https://www.google.com/recaptcha/api.js?render={{config('services.recaptcha_v3.sitekey')}}"></script>
     <script>
