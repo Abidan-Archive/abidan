@@ -47,12 +47,16 @@
             ...$page.props.flash,
         });
 
-    let validationCount = Object.keys($page.props.errors).length;
-    let validationTitlePrefix = $derived(
-        validationCount ? `(${validationCount} errors) ` : ''
-    );
-    $inspect(validationCount, validationTitlePrefix);
-    // console.log({ validationCount, validationTitlePrefix });
+    let validationTitlePrefix = $derived.by(() => {
+        const count = Object.keys($page.props?.errors ?? {}).length;
+        return count ? `(${count} errors) ` : '';
+    });
+
+    // Register window helpers
+    $effect(() => {
+        if (typeof window === 'undefined') return;
+        window.page = $page;
+    });
 
     const modalRegistry = {
         banModal: { ref: BanModal },
