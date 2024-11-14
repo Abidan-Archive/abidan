@@ -7,10 +7,11 @@
 
     let { tag, reports } = $props();
 
-    const edit =
+    const edit = $derived(
         ['admin', 'moderator'].some((role) =>
             $page.props.auth.user?.roles.includes(role)
-        ) && route('tag.edit', tag);
+        ) && route('tag.edit', tag)
+    );
 </script>
 
 <Page header={`Tag - ${tag.name} (${reports.total})`} {edit}>
