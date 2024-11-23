@@ -97,28 +97,37 @@
     }
 </script>
 
-<article id={report.id} class={cn('card', className)}>
-    <section class="flex justify-between">
-        <div>
+{#snippet event()}
+    <a
+        class="hover:underline"
+        use:inertia
+        href={route('event.show', report.event.id)}>
+        {report.event.name}
+    </a>
+{/snippet}
+{#snippet date()}
+    {formattedDate}
+{/snippet}
+<article id={report.id} class={cn('card flex flex-col gap-4', className)}>
+    <section class="flex items-start justify-between gap-2">
+        <div class="md:gap-none flex flex-col gap-2 md:flex-row">
             <h3>
                 <a
                     class="font-bold hover:underline"
                     use:inertia
-                    href={route('report.show', report)}>#{report.id}</a>
-
-                {#if withEvent}
-                    &middot;
-                    <a
-                        class="hover:underline"
-                        use:inertia
-                        href={route('event.show', report.event.id)}>
-                        {report.event.name}
-                    </a>
-                {/if}
-                &middot; <span>{formattedDate}</span>
+                    href={route('report.show', report)}>
+                    #{report.id}
+                </a>
             </h3>
+            {#if withEvent}
+                <span class="hidden md:block"> &middot; </span>
+                {@render event()}
+            {/if}
+            <span class="hidden md:block">&middot;</span>
+            {@render date()}
         </div>
-        <div class="flex items-center gap-2 text-sm text-typo-600">
+        <div
+            class="flex flex-col items-start gap-2 text-sm text-typo-600 sm:flex-row sm:items-center">
             <button
                 class="flex hover:underline hover:underline-offset-4"
                 onclick={linkClicked}>
@@ -139,29 +148,36 @@
             </button>
         </div>
     </section>
-    <section class="my-5">
+    <section class="flex flex-col gap-4 md:pb-4">
         {#each report.dialogues as dialogue}
-            <dl class="mb-2">
+            <dl>
                 <dt class="text-lg font-bold">{dialogue.speaker}</dt>
                 <dd class="whitespace-pre-line">
                     <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-                    {@html dialogue.line_html}
+                    {@html dialogue.line_html.trim()}
                 </dd>
             </dl>
         {/each}
     </section>
-    <div class="flex justify-between">
+    <div class="flex flex-col justify-between gap-4 md:flex-row">
         <section>
             {#if !!report.footnote}
-                <h5 class="font-bold">Footnote:</h5>
-                <!-- <p>{report.footnote}</p> -->
-                <p>Wow what a time this is an amazing footer hahahaha</p>
+                <h5 class="pb-2 font-bold">Footnote:</h5>
+                <p>{report.footnote}</p>
             {/if}
         </section>
-        <div class="' flex items-end gap-2">
-            {#each report.tags || [] as tag}
-                <Tag {tag} />
-            {/each}
-        </div>
+        <section class="block items-end md:flex">
+            {#if !!report.tags?.length}
+                <h5 class="pb-2 text-left font-bold md:hidden md:text-right">
+                    Tags:
+                </h5>
+            {/if}
+            <div
+                class="flex flex-wrap items-center justify-start gap-2 md:flex-nowrap md:justify-end">
+                {#each report.tags || [] as tag}
+                    <Tag {tag} />
+                {/each}
+            </div>
+        </section>
     </div>
 </article>
