@@ -50,7 +50,7 @@ class AdminController extends Controller
    */
   public function source(): Response
   {
-    $sources = Source::with('event')->with('stub')->all();;
+    $sources = Source::with('event')->with('stub')->all();
     return inertia('Admin/Source', compact('source'));
   }
 
