@@ -64,27 +64,35 @@
     }
     function likeClicked() {
         if (!report.is_liked) {
-            router.post(route('like'), {
-                likeable_type: 'App\\Models\\Report',
-                id: report.id,
-                onSuccess: () =>
-                    toastStore.trigger({
-                        message: `${likedVerbs.pick()} Report #${report.id}`,
-                    }),
-            });
+            router.post(
+                route('like'),
+                {
+                    likeable_type: 'App\\Models\\Report',
+                    id: report.id,
+                    onSuccess: () =>
+                        toastStore.trigger({
+                            message: `${likedVerbs.pick()} Report #${report.id}`,
+                        }),
+                },
+                { preserveScroll: true }
+            );
         } else {
             // router delete doesn't allow payload, so we're faking it with _method
-            router.post(route('unlike'), {
-                _method: 'DELETE',
-                likeable_type: 'App\\Models\\Report',
-                id: report.id,
-                onSuccess: () =>
-                    toastStore.trigger({
-                        message: `Report #${
-                            report.id
-                        } ${removeVerbs.pick()} from your likes`,
-                    }),
-            });
+            router.post(
+                route('unlike'),
+                {
+                    _method: 'DELETE',
+                    likeable_type: 'App\\Models\\Report',
+                    id: report.id,
+                    onSuccess: () =>
+                        toastStore.trigger({
+                            message: `Report #${
+                                report.id
+                            } ${removeVerbs.pick()} from your likes`,
+                        }),
+                },
+                { preserveScroll: true }
+            );
         }
     }
 </script>
@@ -146,13 +154,14 @@
         <section>
             {#if !!report.footnote}
                 <h5 class="font-bold">Footnote:</h5>
-                <p>{report.footnote}</p>
+                <!-- <p>{report.footnote}</p> -->
+                <p>Wow what a time this is an amazing footer hahahaha</p>
             {/if}
         </section>
-        <section class="flex items-end gap-2">
+        <div class="' flex items-end gap-2">
             {#each report.tags || [] as tag}
                 <Tag {tag} />
             {/each}
-        </section>
+        </div>
     </div>
 </article>
