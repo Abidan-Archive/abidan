@@ -2,7 +2,7 @@
     import Page from '@/Components/Page.svelte';
     import route from '@/lib/route';
     import { Button } from '@/Components/forms';
-    import { page, router } from '@inertiajs/svelte';
+    import { router } from '@inertiajs/svelte';
 
     function resend(e) {
         e.preventDefault();
@@ -21,13 +21,6 @@
             email address by clicking on the link we just emailed to you? If you
             didn't receive the email, we will gladly send you another.
         </div>
-
-        {#if $page.props.status == 'verification-link-sent'}
-            <div class="text-sm font-medium text-green-400">
-                A new verification link as been sent to the email address you
-                provided during registration.
-            </div>
-        {/if}
 
         <div class="flex items-center justify-between">
             <form method="POST" onsubmit={resend}>
