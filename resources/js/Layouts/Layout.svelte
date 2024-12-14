@@ -49,7 +49,7 @@
 
     let validationTitlePrefix = $derived.by(() => {
         const count = Object.keys($page.props?.errors ?? {}).length;
-        return count ? `(${count} errors) ` : '';
+        return count ? `(${count} error${count > 2 ? 's' : ''}) ` : '';
     });
 
     // Register window helpers

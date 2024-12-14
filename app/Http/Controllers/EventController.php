@@ -18,7 +18,7 @@ class EventController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth')
+        $this->middleware(['auth', 'verified'])
             ->except('index', 'show');
         $this->authorizeResource(Event::class, 'event');
     }
@@ -28,15 +28,7 @@ class EventController extends Controller
      */
     public function index(): Response
     {
-        $events = Event::with('reports')
-            ->paginate(20)
-            ->through(fn ($event) => [
-                'id' => $event->id,
-                'name' => $event->name,
-                'date' => $event->date,
-                'location' => $event->location,
-                'reports' => $event->reports->count(),
-            ]);
+        $events = Event::select(['id', 'name', 'location', 'date' ])->withCount('reports')->paginate(20);
 
         return inertia('Event/Index', compact('events'));
     }
@@ -60,7 +52,8 @@ class EventController extends Controller
             Source::createFromFile($event, $file, $i);
         }
 
-        return to_route('event.update', compact('event'))->with('flash', ['message' => 'Event successfully created!']);
+        return to_route('event.update', compact('event'))
+            ->with('flash', ['message' => 'Event successfully created!']);
     }
 
     /**

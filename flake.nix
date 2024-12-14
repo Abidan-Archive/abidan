@@ -59,7 +59,12 @@
 
               languages.php = {
                 enable = true;
-                package = pkgs.php83;
+                package = pkgs.php83.buildEnv {
+                  extraConfig = ''
+                    upload_max_filesize = 500M
+                    post_max_size = 550M
+                  '';
+                };
                 extensions = [
                   "ctype"
                   "curl"
@@ -77,8 +82,8 @@
               languages.javascript = {
                 enable = true;
                 pnpm = {
-                    enable = true;
-                    install.enable = true;
+                  enable = true;
+                  install.enable = true;
                 };
               };
 

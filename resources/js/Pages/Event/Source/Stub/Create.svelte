@@ -1,6 +1,6 @@
 <script>
     import { onMount, onDestroy } from 'svelte';
-    import { page, router } from '@inertiajs/svelte';
+    import { inertia, page, router } from '@inertiajs/svelte';
     import Peaks from 'peaks.js';
 
     import { Button, IconButton } from '@/Components/forms';
@@ -257,6 +257,7 @@
 
 <svelte:window onkeydown={onKeyDown} onkeyup={onKeyUp} />
 <Page class="flex w-full flex-col gap-5">
+    <a use:inertia href={route('event.edit', event)}>Back to Event</a>
     <figure class="flex flex-col items-center gap-2">
         <figcaption class="my-2">{event.name} - {source.name}</figcaption>
         <div id="overview-container" bind:this={overviewWaveformRef}></div>

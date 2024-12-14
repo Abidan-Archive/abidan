@@ -86,7 +86,7 @@ class Source extends Model
     {
         $dir = Storage::disk('public')->path(self::DIRECTORY);
         $out = pathinfo($filename, PATHINFO_FILENAME).'.dat';
-        $process = new Process(['audiowaveform', '-q', '-b 8', '-i', "$dir/$filename", '-o', "$dir/$out"]);
+        $process = new Process(['audiowaveform', '-q', '-b8', '-i', "$dir/$filename", '-o', "$dir/$out"]);
         $process->run();
         if (! $process->isSuccessful()) {
             throw new ProcessFailedException($process);

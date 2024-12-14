@@ -1,7 +1,14 @@
 <script>
+    import Page from '@/Components/Page.svelte';
     import CircleX from '@/Components/icons/CircleX.svelte';
     import { formatToInputDateString, route } from '@/lib';
-    import { ErrorMessage, Label, Button, Input } from '@/Components/forms';
+    import {
+        ErrorMessage,
+        Label,
+        Button,
+        Field,
+        Input,
+    } from '@/Components/forms';
     import { router, useForm, page } from '@inertiajs/svelte';
     import {
         FileDropzone,
@@ -20,20 +27,13 @@
         location: event.location,
         sources: [],
     });
-    let rejectedFiles = [];
 
-    // eslint-disable-next-line no-unused-vars
-    function handleFilesSelect(e) {
-        const { acceptedFiles, fileRejections } = e.detail;
-        $form.sources = [...$form.sources, ...acceptedFiles];
-        rejectedFiles = [...rejectedFiles, ...fileRejections];
+    function fileOnChange(e) {
+        $form.sources = Array.from(e.target.files);
     }
 
     function handleRemoveFile(index) {
-        console.log({ index, sources: $form.sources });
-        return;
-        // $form.sources.splice(index, 1);
-        // $form.sources = [...$form.sources];
+        $form.sources = $form.sources.filter((_, i) => i !== index);
     }
 
     function handleRemoveAllFiles() {
@@ -50,7 +50,6 @@
             },
             { forceFormData: true }
         );
-        // $form.put(route('event.update', event.id), { forceFormData: true });
     }
 
     // Let's use the same form for each source
@@ -103,117 +102,105 @@
     // }
 </script>
 
-<section class="contianer mx-auto mt-10">
-    <h2 class="my-5 text-2xl">Edit Event</h2>
+<Page header="Edit Event">
     <div class="card">
         <form method="POST" onsubmit={handleEventSubmit}>
-            <div class="block">
-                <Label for="name">Name</Label>
-                <Input
-                    id="name"
-                    name="name"
-                    bind:value={$form.name}
-                    class="mt-1 block w-full"
-                    required />
-                <ErrorMessage message={$form.errors.name} class="mt-2" />
-            </div>
-            <div class="mt-4 block">
-                <Label for="date">Date</Label>
-                <Input
-                    id="date"
-                    name="date"
-                    type="date"
-                    bind:value={$form.date}
-                    class="mt-1 block w-full"
-                    required />
-                <ErrorMessage message={$form.errors.date} class="mt-2" />
-            </div>
-            <div class="mt-4 block">
-                <Label for="location">Location (Place, Url, Etc.)</Label>
-                <Input
-                    id="location"
-                    name="location"
-                    bind:value={$form.location}
-                    class="mt-1 block w-full"
-                    required />
-                <ErrorMessage message={$form.errors.location} class="mt-2" />
-            </div>
-            <div id="dropzone-container" class="mt-4 block">
-                <Label for="dropzone">Add Additional Audio Sources</Label>
-                <FileDropzone name="sources" bind:files={$form.sources} />
+            <Field {form} name="name" required />
+            <Field {form} name="date" type="date" required />
+            <Field
+                {form}
+                name="location"
+                label="Location (Place, Url, Etc.)"
+                required />
+            <div class="flex flex-col gap-2">
+                <Label for="dropzone" class="capitalize">
+                    Add Additional Audio Sources
+                </Label>
+                <FileDropzone
+                    name="sources[]"
+                    accept="audio/*"
+                    multiple={true}
+                    on:change={fileOnChange}>
+                    {#snippet meta()}
+                        Audio files accepted
+                    {/snippet}
+                </FileDropzone>
                 {#each $form.sources as item, i}
                     <ErrorMessage
                         message={($form.errors['sources.' + i] || '').replace(
                             'sources.' + i,
                             item.name
-                        )}
-                        class="mt-2" />
+                        )} />
                 {/each}
                 {#if $form.sources.length > 0}
-                    <div class="mt-1">
+                    <div>
                         <div class="flex justify-between">
-                            <span>Files</span>
-                            <button
+                            <h3 class="font-bold">Files</h3>
+                            <Button
                                 type="button"
-                                class="text-red-400"
-                                onclick={handleRemoveAllFiles}
-                                >Remove All</button>
+                                variant="destructive"
+                                onclick={handleRemoveAllFiles}>
+                                Remove All
+                            </Button>
                         </div>
-                        {#each $form.sources as item, i}
-                            <div class="mt-2 flex gap-2">
-                                <span>{item.name}</span>
-                                <button
-                                    type="button"
-                                    class="text-red-400"
-                                    aria-label="Remove File"
-                                    onclick={() => handleRemoveFile(i)}
-                                    ><CircleX /></button>
-                            </div>
-                        {/each}
+                        <ul>
+                            {#each $form.sources as item, i}
+                                <li class="flex items-center">
+                                    <span>{item.name}</span>
+                                    <button
+                                        type="button"
+                                        class="pl-2 text-red-400"
+                                        aria-label="Remove File"
+                                        onclick={() => handleRemoveFile(i)}>
+                                        <CircleX />
+                                    </button>
+                                </li>
+                            {/each}
+                        </ul>
                     </div>
                 {/if}
             </div>
 
-            <div class="mt-4 flex items-center justify-end p-3">
+            <div class="flex items-center justify-end p-3">
                 <Button type="submit">Update</Button>
             </div>
         </form>
     </div>
-</section>
 
-<section>
-    <h3 class="my-4 text-xl">Manage Sources</h3>
-    <div class="flex flex-col gap-5">
-        {#each event.sources as source}
-            <div class="card flex items-center justify-between">
-                <form
-                    method="PATCH"
-                    onsubmit={(e) => handleRenameSourceSubmit(e, source)}
-                    class="flex items-center gap-1">
+    <section>
+        <h3 class="my-4 text-xl">Manage Sources</h3>
+        <div class="flex flex-col gap-5">
+            {#each event.sources as source}
+                <div class="card flex items-center justify-between">
+                    <form
+                        method="PATCH"
+                        onsubmit={(e) => handleRenameSourceSubmit(e, source)}
+                        class="flex items-center gap-1">
+                        <Button
+                            href={route('event.source.stub.create', [
+                                source.event_id,
+                                source.id,
+                            ])}>Stub</Button>
+                        <Input
+                            id={'source-' + source.id}
+                            bind:value={source.name} />
+                        <Button type="submit">Rename</Button>
+                    </form>
+                    <audio src={source.url} controls class="z-0"></audio>
                     <Button
-                        href={route('event.source.stub.create', [
-                            source.event_id,
-                            source.id,
-                        ])}>Stub</Button>
-                    <Input
-                        id={'source-' + source.id}
-                        bind:value={source.name} />
-                    <Button type="submit">Rename</Button>
-                </form>
-                <audio src={source.url} controls class="z-0"></audio>
-                <Button
-                    variant="danger"
-                    on:click={() =>
-                        modalStore.trigger({
-                            ...deleteModal,
-                            meta: { source },
-                        })}>
-                    Delete
-                </Button>
-            </div>
-        {/each}
-    </div>
-</section>
+                        variant="danger"
+                        on:click={() =>
+                            modalStore.trigger({
+                                ...deleteModal,
+                                meta: { source },
+                            })}>
+                        Delete
+                    </Button>
+                </div>
+            {/each}
+        </div>
+    </section>
+</Page>
 
 <style lang="postcss">
     #dropzone-container :global(.dropzone) {

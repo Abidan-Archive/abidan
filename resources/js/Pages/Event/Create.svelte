@@ -1,10 +1,10 @@
 <script>
     import Page from '@/Components/Page.svelte';
-    // import CircleX from '@/Components/icons/CircleX.svelte';
+    import CircleX from '@/Components/icons/CircleX.svelte';
     import route from '@/lib/route';
-    import { ErrorMessage, Label, Button, Input } from '@/Components/forms';
+    import { ErrorMessage, Label, Button, Field } from '@/Components/forms';
     import { useForm } from '@inertiajs/svelte';
-    import { FileDropzone } from '@skeletonlabs/skeleton';
+    import { FileDropzone, ProgressBar } from '@skeletonlabs/skeleton';
 
     let form = useForm({
         name: null,
@@ -12,28 +12,18 @@
         location: null,
         sources: [],
     });
-    let rejectedFiles = [];
-
-    // eslint-disable-next-line no-unused-vars
-    function handleFilesSelect(e) {
-        const { acceptedFiles, fileRejections } = e.detail;
-        console.log(e);
-        $form.sources = [...$form.sources, ...acceptedFiles];
-        rejectedFiles = [...rejectedFiles, ...fileRejections];
-    }
 
     function fileOnChange(e) {
-        console.log(e);
+        $form.sources = Array.from(e.target.files);
     }
 
-    // function handleRemoveFile(index) {
-    //     const fileListArr = [...$form.sources].splice(index, 1);
-    //     $form.sources = [...$form.sources];
-    // }
-    //
-    // function handleRemoveAllFiles() {
-    //     $form.sources = [];
-    // }
+    function handleRemoveFile(index) {
+        $form.sources = $form.sources.filter((_, i) => i !== index);
+    }
+
+    function handleRemoveAllFiles() {
+        $form.sources = [];
+    }
 
     function submit(e) {
         e.preventDefault();
@@ -44,84 +34,66 @@
 <Page header="Create Event">
     <div class="card">
         <form method="POST" onsubmit={submit} class="flex flex-col gap-4">
-            <div class="block">
-                <Label for="name">Name</Label>
-                <Input
-                    id="name"
-                    name="name"
-                    bind:value={$form.name}
-                    class="mt-1 block w-full"
-                    required />
-                <ErrorMessage message={$form.errors.name} class="mt-2" />
-            </div>
-            <div class="block">
-                <Label for="date">Date</Label>
-                <Input
-                    id="date"
-                    name="date"
-                    type="date"
-                    bind:value={$form.date}
-                    class="mt-1 block w-full"
-                    required />
-                <ErrorMessage message={$form.errors.date} class="mt-2" />
-            </div>
-            <div class="block">
-                <Label for="location">Location (Place, Url, Etc.)</Label>
-                <Input
-                    id="location"
-                    name="location"
-                    bind:value={$form.location}
-                    class="mt-1 block w-full"
-                    required />
-                <ErrorMessage message={$form.errors.location} class="mt-2" />
-            </div>
-            <div class="block">
-                <Label for="dropzone">Audio Source</Label>
+            <Field {form} name="name" required />
+            <Field {form} name="date" type="date" required />
+            <Field
+                {form}
+                name="location"
+                label="Location (Place, Url, Etc.)"
+                required />
+            <div class="flex flex-col gap-2">
+                <Label for="sources" class="capitalize">Audio Source</Label>
                 <FileDropzone
-                    name="sources"
+                    name="sources[]"
                     accept="audio/*"
-                    bind:files={$form.sources}
+                    multiple={true}
                     on:change={fileOnChange}>
                     {#snippet meta()}
                         Audio files accepted
                     {/snippet}
                 </FileDropzone>
+                {#if $form.progress}
+                    <ProgressBar value={$form.progress.percentage} max="100" />
+                {/if}
                 {#each $form.sources as item, i}
                     <ErrorMessage
                         message={($form.errors['sources.' + i] || '').replace(
                             'sources.' + i,
                             item.name
-                        )}
-                        class="mt-2" />
+                        )} />
                 {/each}
                 {#if $form.sources.length > 0}
-                    <div class="mt-1">
-                        <!-- <div class="flex justify-between"> -->
-                        <!--     <span>Files</span> -->
-                        <!--     <Button -->
-                        <!--         type="button" -->
-                        <!--         variant="destructive" -->
-                        <!--         on:click={handleRemoveAllFiles} -->
-                        <!--         aria-label="Remove all files" -->
-                        <!--         >Remove All</Button> -->
-                        <!-- </div> -->
-                        {#each $form.sources as item, i}
-                            <div class="mt-2 flex gap-2">
-                                <span>{item.name} {i}</span>
-                                <!-- <button -->
-                                <!--     type="button" -->
-                                <!--     class="text-red-400" -->
-                                <!--     aria-label="Remove File" -->
-                                <!--     on:click={() => handleRemoveFile(i)} -->
-                                <!--     ><CircleX /></button> -->
-                            </div>
-                        {/each}
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold">Files</h3>
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                onclick={handleRemoveAllFiles}
+                                aria-label="Remove all files">
+                                Remove All
+                            </Button>
+                        </div>
+                        <ul>
+                            {#each $form.sources as item, i}
+                                <li class="flex items-center">
+                                    <span>{item.name}</span>
+                                    <button
+                                        type="button"
+                                        class="pl-2 text-red-400"
+                                        aria-label="Remove File"
+                                        onclick={() => handleRemoveFile(i)}>
+                                        <CircleX />
+                                    </button>
+                                </li>
+                            {/each}
+                        </ul>
                     </div>
                 {/if}
             </div>
 
             <div class="flex items-center justify-end">
-                <Button type="submit" class="ml-3">Create</Button>
+                <Button type="submit">Create</Button>
             </div>
         </form>
     </div>

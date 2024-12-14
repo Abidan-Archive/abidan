@@ -22,6 +22,7 @@
             message: `Event link ${copyVerbs.pick()} into your clipboard.`,
         });
     }
+
     /**
      * @typedef {Object} Props
      * @property {any} event
@@ -30,6 +31,7 @@
 
     /** @type {Props} */
     let { event, class: className = '' } = $props();
+    $inspect(event);
 </script>
 
 <article id={event.id} class={cn('card', className)}>
@@ -68,7 +70,7 @@
             {/if}
         </span>
         <span class="text-sm text-typo-600">
-            {event.reports || 0} reports
+            {event.reports_count || 0} reports
         </span>
     </section>
 </article>
