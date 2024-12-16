@@ -40,7 +40,7 @@
             <h3>
                 <a
                     class="font-bold hover:underline"
-                    use:inertia
+                    use:inertia={{ prefetch: true }}
                     href={route('event.show', event)}
                     >#{event.id}
                     &middot; <span>{event.name}</span>

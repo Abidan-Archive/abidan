@@ -69,7 +69,7 @@
                 <li>
                     <a
                         class="text-lg hover:underline"
-                        use:inertia
+                        use:inertia={{ prefetch: true }}
                         href={route('event.show', event)}>
                         {event.name}
                     </a>
@@ -86,7 +86,7 @@
                 <li>
                     <a
                         class="text-lg no-underline"
-                        use:inertia
+                        use:inertia={{ prefetch: true }}
                         href={route('report.show', report)}>
                         {report.likes_count}
                         <Heart
