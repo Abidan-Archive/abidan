@@ -38,6 +38,6 @@ class SourceController extends Controller
     {
         $source->delete();
 
-        return redirect()->back()->with('flash', ['message' => 'Successfully deleted the name!']);
+        return redirect()->back()->with('flash', ['message' => 'Successfully deleted the source!']);
     }
 }

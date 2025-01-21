@@ -44,8 +44,8 @@
         "@floating-ui/dom": "^1.6.12",
         "class-variance-authority": "^0.7.1",
         "clsx": "^1.2.1",
-        "konva": "8.3.10",
-        "peaks.js": "^2.1.0",
+        "konva": "9.3.18",
+        "peaks.js": "^3.4.2",
         "tailwind-merge": "^1.14.0",
         "waveform-data": "^4.5.0"
     },

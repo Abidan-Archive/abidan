@@ -40,12 +40,14 @@
     };
 
     const toastStore = getToastStore();
-    $page.props.flash &&
-        toastStore.trigger({
-            ...{ background: flashType[$page.props.flash?.type || 'success'] },
-            autohide: !!$page.props.flash?.timeout,
-            ...$page.props.flash,
-        });
+    $effect(() => {
+        $page.props.flash &&
+            toastStore.trigger({
+                background: flashType[$page.props.flash?.type || 'success'],
+                autohide: !!$page.props.flash?.timeout,
+                ...$page.props.flash,
+            });
+    });
 
     let validationTitlePrefix = $derived.by(() => {
         const count = Object.keys($page.props?.errors ?? {}).length;

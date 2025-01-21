@@ -14,11 +14,6 @@
 
     const links = [
         {
-            icon: Gnome,
-            href: 'https://www.willwight.com',
-            label: 'hidden gnome',
-        },
-        {
             icon: Reddit,
             href: 'https://www.reddit.com/r/Iteration110Cradle',
             label: 'reddit r/Iteration110Cradle',
@@ -33,6 +28,16 @@
             href: 'https://twitter.com/williamwight',
             label: 'twitter',
         },
+        {
+            icon: Gnome,
+            href: 'https://www.willwight.com',
+            label: 'hidden gnome',
+        },
+        // {
+        //     icon: HiddenGnome,
+        //     href: 'https://www.willwight.com',
+        //     label: 'hidden gnome',
+        // },
     ];
 </script>
 
@@ -45,8 +50,9 @@
                 aria-label="site github">
                 <Github class="inline" />
             </FooterIcon>
-            <a use:inertia href={route('about')} class="hover:underline"
-                >About Site</a>
+            <a use:inertia href={route('about')} class="hover:underline">
+                About Site
+            </a>
         </nav>
         <nav class="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
             {#each links as link}

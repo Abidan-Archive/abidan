@@ -30,7 +30,7 @@ Route::get('stub', [StubController::class, 'index'])->name('stub.index');
 
 Route::resource('event', EventController::class);
 Route::resource('event.report', ReportController::class)->shallow();
-Route::resource('event.source.stub', StubController::class)->only(['create', 'patch']);
+Route::resource('event.source.stub', StubController::class)->only(['create', 'store']);
 Route::apiResource('event.source', SourceController::class)->except(['index']); // No html routes
 
 Route::resource('tag', TagController::class);

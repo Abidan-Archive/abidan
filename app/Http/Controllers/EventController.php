@@ -88,7 +88,7 @@ class EventController extends Controller
             Source::createFromFile($event, $file, $max + 1 + $i);
         }
 
-        return to_route('event.update', compact('event'))->with('flash', ['message' => 'Event successfully updated!']);
+        return to_route('event.edit', compact('event'))->with('flash', ['message' => 'Event successfully updated!']);
     }
 
     /**

@@ -26,3 +26,8 @@ export const formatToInputDateString = (datestamp) => {
         .map((u, i) => u.toString().padStart(!i ? 4 : 2, '0'))
         .join('-');
 };
+
+export const toFixed = (num, fixed) => {
+    var re = new RegExp('^-?\\d+(?:\\.\\d{0,' + (fixed || -1) + '})?');
+    return parseFloat(num.toString().match(re)[0]);
+};

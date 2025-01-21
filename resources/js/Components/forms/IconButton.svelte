@@ -12,6 +12,7 @@
 
     /** @type {Props & { [key: string]: any }} */
     let {
+        type = 'button',
         class: className = '',
         large = false,
         marked = false,
@@ -22,6 +23,7 @@
 </script>
 
 <button
+    {type}
     class={cn(
         'flex items-center justify-center self-center rounded-full border border-white p-2 text-center text-2xl',
         { 'h-10 w-10': !large, 'h-12 w-12': !!large },

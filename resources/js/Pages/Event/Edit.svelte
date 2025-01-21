@@ -9,14 +9,9 @@
         Field,
         Input,
     } from '@/Components/forms';
-    import { router, useForm, page } from '@inertiajs/svelte';
-    import {
-        FileDropzone,
-        getModalStore,
-        getToastStore,
-    } from '@skeletonlabs/skeleton';
+    import { router, useForm } from '@inertiajs/svelte';
+    import { FileDropzone, getModalStore } from '@skeletonlabs/skeleton';
 
-    const toastStore = getToastStore();
     const modalStore = getModalStore();
 
     let { event } = $props();
@@ -63,19 +58,7 @@
         // Then submit to the proper source
         $renameSource.put(
             route('event.source.update', [source.event_id, source.id]),
-            {
-                // Handle via toast
-                onSuccess: () =>
-                    toastStore.trigger({
-                        message: $page.props.flash,
-                        background: 'variant-filled-success',
-                    }),
-                onError: () =>
-                    toastStore.trigger({
-                        message: $renameSource.errors.name,
-                        background: 'variant-filled-error',
-                    }),
-            }
+            {}
         );
     }
 
@@ -84,22 +67,14 @@
         type: 'confirm',
         title: 'Confirm Delete',
         body: 'Are you sure you want to delete this source? All attached stubs will be deleted regardless of completion.',
-        response: (r) => console.log(r),
     };
 
-    // function handleDeleteSourceSubmit(source) {
-    //     router.delete(
-    //         route('event.source.destroy', [source.event_id, source.id]),
-    //         {
-    //             onSuccess: () => undefined, //addFlash($page.props.flash),
-    //             onError: () => undefined,
-    //             // addToast({
-    //             //     message: 'Uh oh something went wrong.',
-    //             //     type: 'error',
-    //             // }),
-    //         }
-    //     );
-    // }
+    function handleDeleteSourceSubmit(source) {
+        router.delete(
+            route('event.source.destroy', [source.event_id, source.id]),
+            {}
+        );
+    }
 </script>
 
 <Page header="Edit Event">
@@ -107,11 +82,7 @@
         <form method="POST" onsubmit={handleEventSubmit}>
             <Field {form} name="name" required />
             <Field {form} name="date" type="date" required />
-            <Field
-                {form}
-                name="location"
-                label="Location (Place, Url, Etc.)"
-                required />
+            <Field {form} name="location" label="Location (Place, Url, Etc.)" />
             <div class="flex flex-col gap-2">
                 <Label for="dropzone" class="capitalize">
                     Add Additional Audio Sources
@@ -173,7 +144,7 @@
             {#each event.sources as source}
                 <div class="card flex items-center justify-between">
                     <form
-                        method="PATCH"
+                        method="PUT"
                         onsubmit={(e) => handleRenameSourceSubmit(e, source)}
                         class="flex items-center gap-1">
                         <Button
@@ -186,13 +157,14 @@
                             bind:value={source.name} />
                         <Button type="submit">Rename</Button>
                     </form>
-                    <audio src={source.url} controls class="z-0"></audio>
+                    <audio src={source.audio_url} controls class="z-0"></audio>
                     <Button
                         variant="danger"
-                        on:click={() =>
+                        onclick={() =>
                             modalStore.trigger({
                                 ...deleteModal,
-                                meta: { source },
+                                response: (r) =>
+                                    r && handleDeleteSourceSubmit(source),
                             })}>
                         Delete
                     </Button>
@@ -201,9 +173,3 @@
         </div>
     </section>
 </Page>
-
-<style lang="postcss">
-    #dropzone-container :global(.dropzone) {
-        @apply rounded-md border-gray-700 bg-gray-900 text-gray-300 shadow-sm focus:border-indigo-600 focus:ring-indigo-600;
-    }
-</style>

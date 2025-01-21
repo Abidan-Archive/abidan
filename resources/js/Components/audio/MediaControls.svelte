@@ -1,5 +1,4 @@
 <script>
-    import { createEventDispatcher } from 'svelte';
     import {
         PlayPause,
         Previous,
@@ -12,33 +11,33 @@
     } from '@/Components/icons';
     import { IconButton } from '@/Components/forms';
 
-    let dispatch = createEventDispatcher();
+    let { playpause, seek, clip, zoom } = $props();
 
     const controls = [
         {
             title: 'seek backward 5 seconds',
-            event: ['seek', -5],
+            event: () => seek(-5),
             icon: Backward,
         },
         {
             title: 'seek backward 1 seconds',
-            event: ['seek', -1],
+            event: () => seek(-1),
             icon: Previous,
         },
         {
             title: 'toggle play pause',
-            event: ['playpause'],
+            event: () => playpause(),
             icon: PlayPause,
             variant: { large: true },
         },
         {
             title: 'seek forward 1 seconds',
-            event: ['seek', 1],
+            event: () => seek(1),
             icon: Next,
         },
         {
             title: 'seek forward 5 seconds',
-            event: ['seek', 5],
+            event: () => seek(5),
             icon: Forward,
         },
     ];
@@ -50,7 +49,7 @@
         {#each controls as control}
             <IconButton
                 title={control.title}
-                on:click={() => dispatch(...control.event)}
+                onclick={control.event}
                 {...control.variant}>
                 <control.icon />
             </IconButton>
@@ -58,24 +57,21 @@
     </div>
     <div class="w-1/6 self-center justify-self-end text-right">
         <button
-            title="create a segment"
+            title="zoom out from waveform"
             class="hover:text-typo-600"
-            onclick={() => dispatch('zoom', false)}>
+            onclick={() => zoom(false)}>
             <MagnifyingGlassMinus />
         </button>
         <button
-            title="create a segment"
+            title="zoom into waveform"
             class="hover:text-typo-600"
-            onclick={() => dispatch('zoom', true)}>
+            onclick={() => zoom(true)}>
             <MagnifyingGlassPlus />
         </button>
     </div>
 </div>
 <div class="align-center flex justify-center gap-2">
-    <IconButton
-        title="create a segment"
-        on:click={() => dispatch('clip')}
-        large>
+    <IconButton title="create a segment" onclick={() => clip()} large>
         <Scissors />
     </IconButton>
 </div>

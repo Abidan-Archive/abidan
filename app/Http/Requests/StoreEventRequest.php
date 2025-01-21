@@ -16,7 +16,7 @@ class StoreEventRequest extends FormRequest
         return [
             'name' => 'required|unique:events|max:255',
             'date' => 'required|date',
-            'location' => 'required|max:255',
+            'location' => 'max:255',
             'sources' => 'array',
             'sources.*' => 'file|mimes:mpga,wav,mp4,mpeg,mp3',
         ];

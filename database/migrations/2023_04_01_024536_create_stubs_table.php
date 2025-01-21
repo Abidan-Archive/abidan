@@ -18,8 +18,8 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->unsignedInteger('from');
-            $table->unsignedInteger('to');
+            $table->unsignedInteger('from'); // audio time
+            $table->unsignedInteger('to'); // audio time
             $table->string('prompt')->nullable();
             $table->string('filename')->nullable(); // Only null on initial upload
 

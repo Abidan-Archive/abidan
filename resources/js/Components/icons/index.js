@@ -14,6 +14,7 @@ export { default as Forward } from './Forward.svelte';
 export { default as Github } from './Github.svelte';
 export { default as Globe } from './Globe.svelte';
 export { default as Gnome } from './Gnome.svelte';
+export { default as HiddenGnome } from './HiddenGnome.svelte';
 export { default as Hamburger } from './Hamburger.svelte';
 export { default as Heart } from './Heart.svelte';
 export { default as House } from './House.svelte';

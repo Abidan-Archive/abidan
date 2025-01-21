@@ -36,11 +36,7 @@
         <form method="POST" onsubmit={submit} class="flex flex-col gap-4">
             <Field {form} name="name" required />
             <Field {form} name="date" type="date" required />
-            <Field
-                {form}
-                name="location"
-                label="Location (Place, Url, Etc.)"
-                required />
+            <Field {form} name="location" label="Location (Place, Url, Etc.)" />
             <div class="flex flex-col gap-2">
                 <Label for="sources" class="capitalize">Audio Source</Label>
                 <FileDropzone
