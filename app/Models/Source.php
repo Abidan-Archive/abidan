@@ -67,7 +67,8 @@ class Source extends Model
      */
     public static function createFromFile(Event $event, UploadedFile $file, int $id): self
     {
-        $filename = implode('_', [$event->id, $id, $file->hashName()]); // <event_id>_<source_id>_<random_hash>.<ext>
+        // source_<event_id>_<source_id>_<random_hash>.<ext>
+        $filename = implode('_', ['source', $event->id, $id, $file->hashName()]);
         // Directory, Name, Disk
         $file->storeAs(self::DIRECTORY, $filename, 'public'); // storage/app/public/sources/<FILENAME>
         self::createDat($filename);

@@ -71,11 +71,12 @@ class Stub extends Model
     {
         // Generate the string params for ffmpeg
         $input = Storage::disk('public')->path(Source::DIRECTORY).'/'.$this->source->filename;
-        $filename = implode('_', [$this->source->id, $this->id, Str::random(40)]).'.'.pathinfo($input, PATHINFO_EXTENSION);
+        // stub_<source_id>_<stub_id>_<random_hash>.<ext>
+        $filename = implode('_', ['stub', $this->source->id, $this->id, Str::random(40)]).'.'.pathinfo($input, PATHINFO_EXTENSION);
         $output = Storage::disk('public')->path(self::DIRECTORY).'/'.$filename;
 
         // Run ffmpeg to generate our stub audio
-        $process = new Process(['ffmpeg', '-ss', $this->from, '-t', $this->to - $this->from, '-c copy', '-i', $input, '-o', $output]);
+        $process = new Process(['ffmpeg', '-ss', $this->from, '-t', $this->to - $this->from, '-i', $input, '-c', 'copy', $output]);
         $process->run();
         if (! $process->isSuccessful()) {
             throw new ProcessFailedException($process);

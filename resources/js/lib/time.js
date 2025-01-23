@@ -1,8 +1,5 @@
 export function secondsToDuration(value) {
-    const secs = `${parseFloat(`${value % 60}`, 10).toFixed(2)}`.padStart(
-        2,
-        '0'
-    );
+    const secs = `${parseFloat(`${value % 60}`, 10)}`.padStart(2, '0');
     const mins = parseInt(`${(value / 60) % 60}`, 10);
     const hours = parseInt(`${(value / 3600) % 60}`, 10);
 

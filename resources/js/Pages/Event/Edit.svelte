@@ -148,7 +148,7 @@
                         onsubmit={(e) => handleRenameSourceSubmit(e, source)}
                         class="flex items-center gap-1">
                         <Button
-                            href={route('event.source.stub.create', [
+                            href={route('event.source.scrub', [
                                 source.event_id,
                                 source.id,
                             ])}>Stub</Button>
@@ -157,7 +157,10 @@
                             bind:value={source.name} />
                         <Button type="submit">Rename</Button>
                     </form>
-                    <audio src={source.audio_url} controls class="z-0"></audio>
+                    <audio controls class="z-0">
+                        <source src={source.audio_url} type="audio/mpeg" />
+                        Your browser does not support the audio element.
+                    </audio>
                     <Button
                         variant="danger"
                         onclick={() =>

@@ -4,7 +4,6 @@
     import Event from '@/Components/Event.svelte';
 
     let { events } = $props();
-    $inspect(events);
 </script>
 
 <Page header="Events">

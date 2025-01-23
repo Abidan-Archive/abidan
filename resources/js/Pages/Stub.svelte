@@ -4,8 +4,10 @@
     import Page from '@/Components/Page.svelte';
     import Paginator from '@/Components/Paginator.svelte';
     import route from '@/lib/route';
+    import { secondsToDuration } from '@/lib/time';
 
     let { stubs } = $props();
+    console.log(stubs);
 </script>
 
 <Page header="All Stubs">
@@ -20,17 +22,41 @@
         {:else}
             <Paginator {...stubs} />
             {#each stubs.data as stub}
-                <div class="card">
+                <div class="card flex items-center justify-between">
                     <a
+                        class="text-2xl"
                         use:inertia
-                        href={route('event.source.stub.show', [
-                            stub.event.id,
-                            stub.source.id,
+                        href={route('stub.transcribe', [
+                            stub.source.event_id,
+                            stub.source_id,
                             stub.id,
                         ])}>
-                        {stub.prompt || 'No Prompt Given'} &dash; {stub.event
-                            .name}
+                        {stub.prompt || 'No Prompt Given'}
                     </a>
+                    <audio controls>
+                        <source src={stub.audio_url} type="audio/mpeg" />
+                        Your browser does not support the audio element.
+                    </audio>
+                    <div class="text-right">
+                        <p>
+                            Event:
+                            <strong>{stub.source.event.name}</strong>
+                        </p>
+                        <p>
+                            Created:
+                            <strong>
+                                {new Date(stub.created_at).toLocaleDateString(
+                                    'en-US'
+                                )}
+                            </strong>
+                        </p>
+                        <p>
+                            Duration:
+                            <strong>
+                                {secondsToDuration(stub.to - stub.from)}
+                            </strong>
+                        </p>
+                    </div>
                 </div>
             {/each}
             <Paginator {...stubs} />

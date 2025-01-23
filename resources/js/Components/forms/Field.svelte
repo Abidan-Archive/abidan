@@ -32,7 +32,7 @@
         {name}
         {type}
         bind:value={$form[name]}
-        class={cn('block w-full', className)}
+        class={cn('input block w-full', className)}
         {...rest} />
     <ErrorMessage message={$form.errors[name]} />
 

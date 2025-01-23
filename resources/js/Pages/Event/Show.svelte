@@ -14,7 +14,7 @@
         ) && route('event.edit', event);
 </script>
 
-<Page header={event.name} {edit}>
+<Page header={event.name + ' - Event'} {edit}>
     <div class="mb-8 grid w-full grid-cols-3">
         <dl>
             <dt class="font-semibold">Date:</dt>

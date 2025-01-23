@@ -2,7 +2,7 @@
     import Page from '@/Components/Page.svelte';
     import { ErrorMessage, Label, Button, Input } from '@/Components/forms';
 
-    let { stub = undefined } = $props();
+    // let { events } = $props();
     let dialogues = $state([
         {
             speaker: 'Speaker',
@@ -20,10 +20,6 @@
 </script>
 
 <Page header="Create Report">
-    {#if stub}
-        <h3>{stub.prompt}</h3>
-        <audio src={stub.audio_url} controls></audio>
-    {/if}
     <form method="POST" onsubmit={submit}>
         {#each dialogues as dialogue, idx}
             <div class="card">

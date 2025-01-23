@@ -25,13 +25,15 @@ Route::get('/', [HomeController::class, 'home'])->name('home');
 Route::get('about', [HomeController::class, 'about'])->name('about');
 Route::get('search', [SearchController::class, 'search'])->name('search');
 
-Route::get('report', [ReportController::class, 'index'])->name('report.index');
-Route::get('stub', [StubController::class, 'index'])->name('stub.index');
+Route::resource('report', ReportController::class);
 
 Route::resource('event', EventController::class);
-Route::resource('event.report', ReportController::class)->shallow();
-Route::resource('event.source.stub', StubController::class)->only(['create', 'store']);
 Route::apiResource('event.source', SourceController::class)->except(['index']); // No html routes
+
+Route::get('stub', [StubController::class, 'index'])->name('stub.index');
+Route::get('event/{event}/source/{source}/scrub', [StubController::class, 'create'])->name('event.source.scrub');
+Route::resource('event.source.stub', StubController::class)->only(['store', 'destroy']);
+Route::get('event/{event}/source/{source}/stub/{stub}/transcribe', [ReportController::class, 'createFromStub'])->name('stub.transcribe');
 
 Route::resource('tag', TagController::class);
 

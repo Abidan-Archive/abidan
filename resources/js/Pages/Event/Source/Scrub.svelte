@@ -4,7 +4,7 @@
     import Peaks from 'peaks.js';
 
     import CustomSegmentMarker from '@/lib/peaks-custom-marker.js';
-    import MediaControls from '@/Components/audio/MediaControls.svelte';
+    import ScrubControls from '@/Components/audio/ScrubControls.svelte';
     import Oddment from '@/lib/oddment.js';
     import Page from '@/Components/Page.svelte';
     import route from '@/lib/route.js';
@@ -281,7 +281,7 @@
             Your browser does not support the audio element.
         </audio>
 
-        <MediaControls {playpause} clip={addSegment} {seek} {zoom} />
+        <ScrubControls {playpause} clip={addSegment} {seek} {zoom} />
     </figure>
     {#if !!segments && !!segments?.length}
         <hr />
@@ -338,6 +338,7 @@
                                 type="text"
                                 class="w-full rounded text-black"
                                 placeholder={promptOddment.pick()}
+                                value={segment.prompt}
                                 oninput={(e) => updateSegmentPrompt(e, segment)}
                                 required />
                         </div>

@@ -5,13 +5,11 @@
         Next,
         Forward,
         Backward,
-        Scissors,
-        MagnifyingGlassPlus,
-        MagnifyingGlassMinus,
     } from '@/Components/icons';
     import { IconButton } from '@/Components/forms';
+    import cn from '@/lib/cn';
 
-    let { playpause, seek, clip, zoom } = $props();
+    let { playpause, seek, class: className } = $props();
 
     const controls = [
         {
@@ -43,35 +41,13 @@
     ];
 </script>
 
-<div class="flex w-full justify-between">
-    <div class="w-1/6"></div>
-    <div class="align-center flex justify-center gap-2">
-        {#each controls as control}
-            <IconButton
-                title={control.title}
-                onclick={control.event}
-                {...control.variant}>
-                <control.icon />
-            </IconButton>
-        {/each}
-    </div>
-    <div class="w-1/6 self-center justify-self-end text-right">
-        <button
-            title="zoom out from waveform"
-            class="hover:text-typo-600"
-            onclick={() => zoom(false)}>
-            <MagnifyingGlassMinus />
-        </button>
-        <button
-            title="zoom into waveform"
-            class="hover:text-typo-600"
-            onclick={() => zoom(true)}>
-            <MagnifyingGlassPlus />
-        </button>
-    </div>
-</div>
-<div class="align-center flex justify-center gap-2">
-    <IconButton title="create a segment" onclick={() => clip()} large>
-        <Scissors />
-    </IconButton>
+<div class={cn('flex justify-center gap-2 text-center', className)}>
+    {#each controls as control}
+        <IconButton
+            title={control.title}
+            onclick={control.event}
+            {...control.variant}>
+            <control.icon />
+        </IconButton>
+    {/each}
 </div>

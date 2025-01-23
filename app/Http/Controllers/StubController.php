@@ -23,7 +23,7 @@ class StubController extends Controller
      */
     public function index(): Response
     {
-        $stubs = Stub::with(['event', 'source'])->orderBy('created_at')->paginate(20);
+        $stubs = Stub::with('source.event')->orderBy('created_at')->paginate(20);
 
         return inertia('Stub', compact('stubs'));
     }
@@ -46,14 +46,14 @@ class StubController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     * aka audio scrubber
+     * aka audio scrub
      */
     public function create(Event $event, Source $source): Response
     {
         $source->load('stubs');
 
         return inertia(
-            'Event/Source/Stub/Create',
+            'Event/Source/Scrub',
             [
                 'event' => $event->only('id', 'name'),
                 'source' => $source,

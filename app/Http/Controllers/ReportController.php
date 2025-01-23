@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Report;
+use App\Models\Stub;
+use App\Models\Source;
 use Illuminate\Http\Request;
 use Inertia\Response;
 
@@ -38,12 +40,21 @@ class ReportController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function create(Event $event)
+    public function create()
     {
-        // Create without a stub
-        $event->load('sources');
+        $events = Event::all();
+        return inertia('Report/Create', compact('events'));
+    }
 
-        return inertia('Report/Create', compact('event'));
+    /**
+     * Show the form for creating a new Report from Stub audio.
+     *
+     * @return \Inertia\Response
+     */
+    public function createFromStub(Event $event, Source $source, Stub $stub)
+    {
+        $stub->load('source.event');
+        return inertia('Report/Transcribe', compact('stub'));
     }
 
     /**

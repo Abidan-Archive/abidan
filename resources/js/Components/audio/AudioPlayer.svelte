@@ -1,6 +1,11 @@
 <script>
+    import { popup } from '@skeletonlabs/skeleton';
     import { onMount } from 'svelte';
-    // export let muted = false;
+
+    import { toFixed } from '@/lib/time';
+    import { Volume, Mute, Loop, Stop, Speedometer } from '@/Components/icons';
+    import MediaControls from '@/Components/audio/MediaControls.svelte';
+
     /**
      * @typedef {Object} Props
      * @property {any} src
@@ -9,11 +14,12 @@
      */
 
     /** @type {Props} */
-    let { src, title = 'untitled', loop = true } = $props();
+    let { src, title, loop = true } = $props();
     // export let preload = true;
 
     const barWidth = 3;
     const gap = 2;
+    const barColor = [32, 211, 238]; // rgb, tertiary-500
 
     let audio = $state(); // MediaElement
     let audioCtx = new AudioContext();
@@ -26,7 +32,6 @@
     let isPlaying = $state();
     let currentTime = $state();
     let duration = $state();
-    let volume = $state(0.4);
     let bufferLength;
     let dataArray;
 
@@ -57,21 +62,42 @@
         analyserNode.getByteFrequencyData(dataArray);
 
         canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-        canvasCtx.fillStyle = 'rgba(0,0,0,0)';
+        canvasCtx.fillStyle = 'rgba(37,40,42,0)'; // bg base-700
         canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
         const barCount = bufferLength / (barWidth + gap - 1);
         for (let i = 0, x = 0; i < barCount; ++i, x += barWidth + gap) {
             const perc = (dataArray[i] * 100) / 255; // Percantage scaled to 0-255
             const h = (perc * canvas.height) / 100;
-            canvasCtx.fillStyle = `rgba(${perc}, ${perc}, 255, 1)`;
+            // Take our color, double it, multiply by freq data, normalize by 255
+            canvasCtx.fillStyle = `rgba(${barColor.map((v) => (v * 2 * dataArray[i]) / 255).join(', ')}, 1)`;
             canvasCtx.fillRect(x, canvas.height - h, barWidth, canvas.height);
         }
 
         requestAnimationFrame(updateFrequency.bind(this));
     }
 
-    async function togglePlay() {
+    function formatTime(time) {
+        if (!time) return '0:00';
+        const secs = `${parseInt(`${time % 60}`, 10)}`.padStart(2, '0');
+        const mins = parseInt(`${(time / 60) % 60}`, 10);
+        const hours = parseInt(`${(time / 3600) % 60}`, 10);
+
+        return (
+            hours ? [hours, `${mins}`.padStart(2, '0'), secs] : [mins, secs]
+        ).join(':');
+    }
+
+    async function ended() {
+        if (loop) {
+            audio.currentTime = 0;
+            await audio.play();
+        } else {
+            isPlaying = false;
+        }
+    }
+
+    async function playpause() {
         if (audioCtx.state === 'suspended') {
             await audioCtx.resume();
         }
@@ -85,76 +111,197 @@
             updateFrequency();
         }
     }
-    function formatTime(time) {
-        if (!time) return '0:00';
-        const secs = `${parseInt(`${time % 60}`, 10)}`.padStart(2, '0');
-        const mins = parseInt(`${(time / 60) % 60}`, 10);
-        const hours = parseInt(`${(time / 3600) % 60}`, 10);
 
-        return (
-            hours ? [hours, `${mins}`.padStart(2, '0'), secs] : [mins, secs]
-        ).join(':');
+    function seek(value) {
+        let target = audio.currentTime + value;
+        if (target < 0) target = 0;
+        if (target > duration) target = duration;
+        audio.currentTime = target;
     }
-    function changeVolume(value) {
-        volume = value;
-        gainNode.gain.value = volume;
-    }
+
     function seekTo(value) {
         audio.currentTime = value;
     }
-    async function ended() {
-        if (loop) {
-            audio.currentTime = 0;
-            await audio.play();
-        } else {
-            isPlaying = false;
+
+    let volume = $state(0.5);
+    let isVolumeVisible = $state(false);
+    let previousVolume = $state(0.5);
+    function changeVolume(value) {
+        volume = value;
+        previousVolume = value;
+    }
+    $effect(() => {
+        gainNode.gain.value = volume;
+    });
+
+    /** @type {import('@skeletonlabs/skeleton').PopupSettings} */
+    let volumePopup = {
+        event: 'focus-click',
+        target: 'volumeSliderPopup',
+        placement: 'right',
+        state: ({ state }) => {
+            isVolumeVisible = state;
+            if (!state) clickCount = 0;
+        },
+    };
+
+    let clickCount = $state(0);
+    function handleVolume() {
+        if (isVolumeVisible && clickCount >= 1) {
+            // Volume is visible, clicking mutes
+            if (volume > 0) {
+                previousVolume = volume;
+                volume = 0;
+                return;
+            }
+            // Volume is visible, clicking unmute
+            if (volume <= 0) {
+                volume = previousVolume;
+                return;
+            }
         }
+        clickCount++;
+    }
+
+    /** @type {import('@skeletonlabs/skeleton').PopupSettings} */
+    let speedPopup = {
+        event: 'focus-click',
+        target: 'speedSliderPopup',
+        placement: 'left',
+    };
+    const maxSpeed = 3;
+    const minSpeed = 1 / maxSpeed;
+    let speedSliderValue = $state(toSpeedSlider(1));
+    let speed = $state(1);
+    function toSpeedActual(slider) {
+        return Math.exp(
+            Math.log(minSpeed) +
+                slider * (Math.log(maxSpeed) - Math.log(minSpeed))
+        );
+    }
+    function toSpeedSlider(actual) {
+        return (
+            (Math.log(actual) - Math.log(minSpeed)) /
+            (Math.log(maxSpeed) - Math.log(minSpeed))
+        );
+    }
+    $effect(() => (speed = toSpeedActual(speedSliderValue)));
+
+    let isShiftHeld = false;
+    function onKeyDown(e) {
+        if (e.repeat) return;
+        if (e.key === 'Shift') return (isShiftHeld = true);
+        switch (e.code) {
+            case 'Space':
+            case 'Enter':
+                if (e.target.tagName.toLowerCase() === 'input') return;
+                e.preventDefault();
+                return isShiftHeld && playpause();
+            case 'ArrowRight':
+                if (e.target.tagName.toLowerCase() === 'input') return;
+                e.preventDefault();
+                return seek(isShiftHeld ? 5 : 1);
+            case 'ArrowLeft':
+                if (e.target.tagName.toLowerCase() === 'input') return;
+                e.preventDefault();
+                return seek(isShiftHeld ? -5 : -1);
+        }
+    }
+    function onKeyUp(e) {
+        if (e.key === 'Shift') isShiftHeld = false;
     }
 </script>
 
+<svelte:window onkeydown={onKeyDown} onkeyup={onKeyUp} />
 <figure
-    class="align-center relative mb-5 flex w-full max-w-md rounded bg-black p-2 font-sans text-white">
-    <figcaption
-        class="absolute left-0 top-[calc(100%+2px)] m-0 w-full rounded-sm bg-inherit px-2 py-1 font-normal uppercase">
-        {title}
-    </figcaption>
+    class="card flex w-full max-w-lg flex-col justify-evenly gap-2 rounded pt-2 text-center font-sans">
+    {#if title}
+        <figcaption
+            class="w-full rounded-sm bg-inherit px-2 py-1 text-center font-normal capitalize">
+            {title}
+        </figcaption>
+    {/if}
     <audio
         {src}
         bind:this={audio}
         bind:duration
         bind:currentTime
-        onended={ended}></audio>
-    <button
-        type="button"
-        class="h-8 w-8 min-w-8 appearance-none overflow-hidden border-none bg-white text-black"
-        onclick={togglePlay}>
-        {#if !isPlaying}
-            play
-        {:else}
-            pause
-        {/if}
-    </button>
-    <div class="flex-1">
-        <span>{formatTime(currentTime)}</span>
-        <input
-            type="range"
-            max={duration}
-            value={currentTime}
-            oninput={(e) => seekTo(e.target.value)} />
-        <span>{formatTime(duration)}</span>
-        <canvas bind:this={canvas} class="h-3 w-full"></canvas>
+        bind:playbackRate={speed}
+        onended={ended}>
+        Your browser does not support the audio element.
+    </audio>
+
+    <canvas bind:this={canvas} class="h-8 w-full"></canvas>
+
+    <div class="flex items-center">
+        <div class="flex flex-1 items-center justify-end gap-2">
+            <span>{formatTime(currentTime)}</span>
+            <input
+                type="range"
+                max={duration}
+                value={currentTime}
+                oninput={(e) => seekTo(e.target.value)} />
+            <span>{formatTime(duration)}</span>
+        </div>
     </div>
-    <!-- <button -->
-    <!--     type="button" -->
-    <!--     class="h-8 w-8 min-w-8 appearance-none overflow-hidden border-none bg-cyan-500 text-black" -->
-    <!--     onclick={() => undefined}></button> -->
-    <div class="hidden">
-        <input
-            type="range"
-            min="0"
-            max="2"
-            step="0.01"
-            value={volume}
-            oninput={(e) => changeVolume(e.target.value)} />
+
+    <div class="grid grid-cols-5 items-center justify-between">
+        <div>
+            <button
+                title="Playback speed"
+                type="button"
+                class="flex items-center gap-1"
+                use:popup={speedPopup}>
+                <Speedometer />
+                <span>x{toFixed(speed, 2)}</span>
+            </button>
+            <div data-popup="speedSliderPopup">
+                <input
+                    class="mr-4 h-24 [writing-mode:bt-lr]"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step=".01"
+                    bind:value={speedSliderValue}
+                    orient="vertical" />
+            </div>
+        </div>
+        <MediaControls {playpause} {seek} class="col-span-3" />
+        <div class="flex justify-between text-right">
+            <button
+                onclick={() => (loop = !loop)}
+                title="Toggle loop at end of track">
+                {#if loop}
+                    <Loop />
+                {:else}
+                    <Stop />
+                {/if}
+            </button>
+            <div>
+                <button
+                    title="Volume"
+                    type="button"
+                    class="h-8 w-8 min-w-8"
+                    use:popup={volumePopup}
+                    onclick={handleVolume}>
+                    {#if volume > 0}
+                        <Volume />
+                    {:else}
+                        <Mute />
+                    {/if}
+                </button>
+                <div data-popup="volumeSliderPopup">
+                    <input
+                        class="ml-2 h-24 [writing-mode:bt-lr]"
+                        type="range"
+                        min="0"
+                        max="2"
+                        step="0.01"
+                        value={volume}
+                        orient="vertical"
+                        oninput={(e) => changeVolume(e.target.value)} />
+                </div>
+            </div>
+        </div>
     </div>
 </figure>
