@@ -27,7 +27,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->throttleApi();
 
-        $middleware->appendToGroup('web', \App\Http\Middleware\EnsureLowercaseUri::class);
+        $middleware->appendToGroup('web', [
+            \App\Http\Middleware\EnsureLowercaseUri::class,
+            \App\Http\Middleware\CompressResponse::class,
+        ]);
 
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureHasRole::class,
