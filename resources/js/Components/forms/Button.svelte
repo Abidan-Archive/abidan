@@ -24,7 +24,7 @@
     } = $props();
 
     const buttonVariants = cva(
-        'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background ',
+        'no-underline inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background ',
         {
             variants: {
                 variant: {
@@ -32,8 +32,7 @@
                         'bg-gray-200 text-gray-800 hover:bg-gray-200/90 border border-transparent hover:bg-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800 active:bg-gray-300',
                     success:
                         'bg-green-500 hover:bg-green-600 focus:bg-green-400',
-                    destructive:
-                        'bg-red-600 hover:bg-red-500 focus:bg-red-300 text-typo-500',
+                    danger: 'bg-red-600 hover:bg-red-500 focus:bg-red-300 text-typo-500',
                     warn: 'bg-yellow-500 hover:bg-yellow-600 focus:bg-yellow-400',
                     link: 'underline-offset-4 hover:underline',
                 },

@@ -22,9 +22,9 @@
         {:else}
             <Paginator {...stubs} />
             {#each stubs.data as stub}
-                <div class="card flex items-center justify-between">
+                <div class="card grid grid-cols-3 items-center">
                     <a
-                        class="text-2xl"
+                        class="h3"
                         use:inertia
                         href={route('stub.transcribe', [
                             stub.source.event_id,
@@ -33,14 +33,33 @@
                         ])}>
                         {stub.prompt || 'No Prompt Given'}
                     </a>
-                    <audio controls>
-                        <source src={stub.audio_url} type="audio/mpeg" />
-                        Your browser does not support the audio element.
-                    </audio>
+                    <div class="flex justify-center text-center">
+                        {#if stub.audio_url}
+                            <audio controls>
+                                <source
+                                    src={stub.audio_url}
+                                    type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                            </audio>
+                        {:else}
+                            <p>
+                                Audio is currently not available for this stub.
+                            </p>
+                        {/if}
+                    </div>
                     <div class="text-right">
                         <p>
                             Event:
-                            <strong>{stub.source.event.name}</strong>
+                            <strong>
+                                <a
+                                    use:inertia
+                                    href={route(
+                                        'event.show',
+                                        stub.source.event
+                                    )}>
+                                    {stub.source.event.name}
+                                </a>
+                            </strong>
                         </p>
                         <p>
                             Created:

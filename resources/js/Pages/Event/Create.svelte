@@ -2,7 +2,13 @@
     import Page from '@/Components/Page.svelte';
     import CircleX from '@/Components/icons/CircleX.svelte';
     import route from '@/lib/route';
-    import { ErrorMessage, Label, Button, Field } from '@/Components/forms';
+    import {
+        ErrorBanner,
+        ErrorMessage,
+        Label,
+        Button,
+        Field,
+    } from '@/Components/forms';
     import { useForm } from '@inertiajs/svelte';
     import { FileDropzone, ProgressBar } from '@skeletonlabs/skeleton';
 
@@ -33,6 +39,7 @@
 
 <Page header="Create Event">
     <div class="card">
+        <ErrorBanner {form} />
         <form method="POST" onsubmit={submit} class="flex flex-col gap-4">
             <Field {form} name="name" required />
             <Field {form} name="date" type="date" required />
@@ -64,7 +71,7 @@
                             <h3 class="font-bold">Files</h3>
                             <Button
                                 type="button"
-                                variant="destructive"
+                                variant="danger"
                                 onclick={handleRemoveAllFiles}
                                 aria-label="Remove all files">
                                 Remove All

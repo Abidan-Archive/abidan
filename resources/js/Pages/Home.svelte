@@ -68,7 +68,7 @@
             {#each events as event}
                 <li>
                     <a
-                        class="text-lg hover:underline"
+                        class="text-lg"
                         use:inertia={{ prefetch: true }}
                         href={route('event.show', event)}>
                         {event.name}
@@ -85,14 +85,14 @@
             {#each mostLiked as report}
                 <li>
                     <a
-                        class="text-lg no-underline"
+                        class="text-lg"
                         use:inertia={{ prefetch: true }}
                         href={route('report.show', report)}>
                         {report.likes_count}
                         <Heart
                             class="inline"
                             variant={report.is_liked ? 'filled' : 'outline'} /> &middot;
-                        <span class="underline">Report #{report.id}</span>
+                        <span>Report #{report.id}</span>
                     </a>
                 </li>
             {:else}

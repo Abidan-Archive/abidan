@@ -16,8 +16,9 @@ class CompressResponse
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
-        if (app()->environment('prod')) {
-            $response->header('Content-Encoding', 'br');
+        $compression = env('RESPONSE_COMPRESSION');
+        if ($compression) {
+            $response->header('Content-Encoding', $compression);
             $response->header('Vary', 'Accept-Encoding');
         }
         return $response;

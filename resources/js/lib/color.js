@@ -10,7 +10,7 @@ export const getContrastYIQ = (color) => {
 export const getContrastText = (color) => {
     return getContrastYIQ(color) >= 128
         ? 'text-base-700 hover:text-black'
-        : 'text-typo-500 hover:text-white';
+        : 'text-surface-100 hover:text-white';
 };
 
 export const getRandomColor = () =>

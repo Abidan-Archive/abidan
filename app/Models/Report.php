@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 
@@ -23,7 +24,7 @@ class Report extends Model implements LikeableContract
 
     protected $appends = ['permalink', 'is_liked'];
 
-    protected $fillable = ['footnote', 'date', 'source_label', 'source_href', 'legacy_permalink'];
+    protected $fillable = ['footnote', 'date', 'source_label', 'source_href', 'legacy_permalink', 'reviewed_at'];
 
     protected $with = ['event', 'dialogues', 'tags'];
 
@@ -32,7 +33,7 @@ class Report extends Model implements LikeableContract
     protected function casts(): array
     {
         return [
-            'date' => 'date',
+            'date' => 'date:Y-m-d',
         ];
     }
 
@@ -54,6 +55,11 @@ class Report extends Model implements LikeableContract
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function stub(): HasOne
+    {
+        return $this->hasOne(Stub::class)->withDefault();
     }
 
     protected function permalink(): Attribute

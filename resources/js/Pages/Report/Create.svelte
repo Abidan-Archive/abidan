@@ -1,47 +1,100 @@
 <script>
-    import Page from '@/Components/Page.svelte';
-    import { ErrorMessage, Label, Button, Input } from '@/Components/forms';
+    import { useForm } from '@inertiajs/svelte';
+    import { route, recaptcha } from '@/lib';
 
-    // let { events } = $props();
-    let dialogues = $state([
-        {
-            speaker: 'Speaker',
-            line: '',
-        },
-        {
-            speaker: 'Will Wight',
-            line: '',
-        },
-    ]);
+    import Page from '@/Components/Page.svelte';
+    import {
+        ErrorBanner,
+        ErrorMessage,
+        Label,
+        Button,
+        Autocomplete,
+    } from '@/Components/forms';
+    import ReportForm from '@/Components/ReportForm.svelte';
+
+    let { events, tags } = $props();
+
+    let form = useForm({
+        event_id: undefined,
+        dialogues: [
+            {
+                speaker: 'Speaker',
+                line: undefined,
+            },
+            {
+                speaker: 'Will Wight',
+                line: undefined,
+            },
+        ],
+        date: undefined,
+        source_label: undefined,
+        source_href: undefined,
+        footnote: undefined,
+        tags: [],
+        recaptcha: null,
+    });
+
     function submit(e) {
         e.preventDefault();
-        console.log({ dialogues });
+        recaptcha('report/create', (token) => {
+            $form.recaptcha = token;
+            $form.dialogues = $form.dialogues.filter((d) =>
+                (d.speaker + d.line).trim()
+            );
+            $form.post(route('report.store'));
+        });
+    }
+
+    function getCompareDate(value) {
+        const date = new Date(value);
+
+        if (isNaN(date.getTime())) return null;
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    let searchOptions = $state([]);
+    function onSearch(value) {
+        searchOptions = events
+            .filter(
+                (event) =>
+                    `${event.id}`.includes(value) ||
+                    event.name.toLowerCase().includes(value.toLowerCase()) ||
+                    event.date === getCompareDate(value) ||
+                    event.date.includes(value)
+            )
+            .map((event) => ({ label: event.name, value: event }));
+    }
+    function onSelect(value) {
+        if (!$form.date) {
+            $form.date = value.date;
+        }
+        $form.event_id = value.id;
     }
 </script>
 
 <Page header="Create Report">
-    <form method="POST" onsubmit={submit}>
-        {#each dialogues as dialogue, idx}
-            <div class="card">
-                <div>
-                    <Label for={'speaker-' + idx}>Speaker</Label>
-                    <Input
-                        id={'speaker-' + idx}
-                        type="text"
-                        name="speaker[]"
-                        bind:value={dialogue.speaker} />
-                    <ErrorMessage message={'idk'} class="mt-2" />
-                </div>
-                <div>
-                    <Label for={'line-' + idx}>Line</Label>
-                    <textarea
-                        id={'line-' + idx}
-                        name="line[]"
-                        bind:value={dialogue.line}></textarea>
-                    <ErrorMessage message={'idk'} class="mt-2" />
-                </div>
-            </div>
-        {/each}
+    <form method="POST" onsubmit={submit} class="flex flex-col gap-4">
+        <ErrorBanner {form} />
+
+        <ReportForm {form} {tags} {eventSection} />
+
+        {#snippet eventSection()}
+            <h3>Event</h3>
+            <Label for="searchEvent">Search Event</Label>
+            <Autocomplete
+                id="eventSearch"
+                onsearch={onSearch}
+                onselect={onSelect}
+                bind:searchOptions />
+            <ErrorMessage message={$form.errors.event_id} />
+        {/snippet}
+
+        <ErrorMessage message={$form.errors.recaptcha} />
+
         <div class="flex items-baseline justify-end">
             <Button>Create</Button>
         </div>

@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use Staudenmeir\EloquentHasManyDeep\HasOneDeep;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Log;
 
 /**
  * @mixin IdeHelperStub
@@ -19,7 +20,7 @@ class Stub extends Model
 {
     use HasFactory, \Staudenmeir\EloquentHasManyDeep\HasRelationships;
 
-    const DIRECTORY = 'sources';
+    const DIRECTORY = 'stubs';
 
     /**
      * The calculated attributes that are appended to the model by default
@@ -44,9 +45,6 @@ class Stub extends Model
         static::deleting(function (Stub $model) {
             Storage::delete(self::DIRECTORY.'/'.$model->filename);
         });
-        static::created(function (Stub $model) {
-            $model->createStubFile();
-        });
     }
 
     public function event(): HasOneDeep
@@ -60,6 +58,11 @@ class Stub extends Model
         return $this->belongsTo(Source::class);
     }
 
+    public function report(): BelongsTo
+    {
+        return $this->belongsTo(Report::class);
+    }
+
     public function audioUrl(): Attribute
     {
         return Attribute::make(get: fn ($value, $attributes) => $attributes['filename'] !== null
@@ -69,6 +72,7 @@ class Stub extends Model
 
     private function createStubFile(): void
     {
+        Log::info('Creating Stub', ['stub'=>$this->id, 'from' => $this->from, 'to'=> $this->to, 'source'=>$this->source->toArray()]);
         // Generate the string params for ffmpeg
         $input = Storage::disk('public')->path(Source::DIRECTORY).'/'.$this->source->filename;
         // stub_<source_id>_<stub_id>_<random_hash>.<ext>

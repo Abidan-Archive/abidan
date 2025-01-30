@@ -14,8 +14,7 @@
      */
 
     /** @type {Props} */
-    let { src, title, loop = true } = $props();
-    // export let preload = true;
+    let { src, title, loop = true, preload = 'auto' } = $props();
 
     const barWidth = 3;
     const gap = 2;
@@ -191,18 +190,17 @@
     function onKeyDown(e) {
         if (e.repeat) return;
         if (e.key === 'Shift') return (isShiftHeld = true);
+        if (['input', 'textarea'].includes(e.target.tagName.toLowerCase()))
+            return;
         switch (e.code) {
             case 'Space':
             case 'Enter':
-                if (e.target.tagName.toLowerCase() === 'input') return;
                 e.preventDefault();
-                return isShiftHeld && playpause();
+                return playpause();
             case 'ArrowRight':
-                if (e.target.tagName.toLowerCase() === 'input') return;
                 e.preventDefault();
                 return seek(isShiftHeld ? 5 : 1);
             case 'ArrowLeft':
-                if (e.target.tagName.toLowerCase() === 'input') return;
                 e.preventDefault();
                 return seek(isShiftHeld ? -5 : -1);
         }
@@ -223,6 +221,7 @@
     {/if}
     <audio
         {src}
+        {preload}
         bind:this={audio}
         bind:duration
         bind:currentTime

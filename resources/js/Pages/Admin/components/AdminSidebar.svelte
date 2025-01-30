@@ -8,6 +8,7 @@
         'Create Event': route('event.create'),
         'Create Tag': route('tag.create'),
         'Manage Users': route('admin.user'),
+        'Manage Stubs': route('stub.index'),
         // 'Review Reports': route('home'),
     };
 

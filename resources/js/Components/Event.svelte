@@ -31,15 +31,14 @@
 
     /** @type {Props} */
     let { event, class: className = '' } = $props();
-    $inspect(event);
 </script>
 
 <article id={event.id} class={cn('card', className)}>
     <section class="mb-4 flex justify-between">
         <div>
-            <h3>
+            <h3 class="h3">
                 <a
-                    class="font-bold hover:underline"
+                    class="font-bold text-white no-underline hover:underline"
                     use:inertia={{ prefetch: true }}
                     href={route('event.show', event)}
                     >#{event.id}
@@ -48,7 +47,7 @@
                 </a>
             </h3>
         </div>
-        <div class="flex items-center text-sm text-typo-600">
+        <div class="flex items-center text-sm">
             <button
                 type="button"
                 class="flex hover:underline hover:underline-offset-4"

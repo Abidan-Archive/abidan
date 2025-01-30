@@ -15,6 +15,7 @@
      * @property {string} [input]
      * @property {any} [includeValue]
      * @property {any} [excludeValue]
+     * @property {booean} [onlyInclude]
      * @property {any} [availableTags]
      * @property {boolean} [required]
      * @property {string} [class]
@@ -30,14 +31,16 @@
         input = $bindable(''),
         includeValue = $bindable([]),
         excludeValue = $bindable([]),
+        onlyInclude = false,
         availableTags = [],
         required = false,
         class: className = '',
         disabled = false,
-        oninput,
+        oninput = () => undefined,
         onkeypress,
         onkeydown,
         onkeyup,
+        name,
         ...rest
     } = $props();
 
@@ -143,14 +146,18 @@
             // If not in include or exclude, include it
             addChipCommon(val, true);
         } else {
-            if (included) {
-                // If in include, remove from include and exclude it
+            if (onlyInclude) {
                 removeChipCommon(val, true);
-                addChipCommon(val, false);
             } else {
-                // If in exclude, remove from exclude and include it
-                removeChipCommon(val, false);
-                addChipCommon(val, true);
+                if (included) {
+                    // If in include, remove from include and exclude it
+                    removeChipCommon(val, true);
+                    addChipCommon(val, false);
+                } else {
+                    // If in exclude, remove from exclude and include it
+                    removeChipCommon(val, false);
+                    addChipCommon(val, true);
+                }
             }
         }
 
@@ -159,6 +166,10 @@
 
     function onChipClick(val) {
         if (disabled) return;
+        if (onlyInclude) {
+            removeChipCommon(val, true);
+            return;
+        }
         if (excludeValue.includes(val)) {
             removeChipCommon(val, false);
             return;
@@ -210,6 +221,7 @@
             <!-- Input Field -->
             <form onsubmit={onSubmit}>
                 <input
+                    {name}
                     type="text"
                     bind:value={input}
                     placeholder="Filter Tags..."

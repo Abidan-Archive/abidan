@@ -7,7 +7,7 @@
         Facebook,
         Twitter,
         Github,
-        Gnome,
+        HiddenGnome,
     } from '@/Components/icons';
     /** @type {{ [key: string]: any }} */
     let { ...props } = $props();
@@ -29,15 +29,10 @@
             label: 'twitter',
         },
         {
-            icon: Gnome,
+            icon: HiddenGnome,
             href: 'https://www.willwight.com',
             label: 'hidden gnome',
         },
-        // {
-        //     icon: HiddenGnome,
-        //     href: 'https://www.willwight.com',
-        //     label: 'hidden gnome',
-        // },
     ];
 </script>
 

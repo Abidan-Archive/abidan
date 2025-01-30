@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStubRequest;
+use App\Jobs\CreateStubFileJob;
 use App\Models\Event;
 use App\Models\Source;
 use App\Models\Stub;
@@ -61,16 +62,19 @@ class StubController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created stub resource in storage.
      */
     public function store(Event $event, Source $source, StoreStubRequest $request): RedirectResponse
     {
 
-        $stubs = collect($request->stubs)->map(fn (array $stub, int $idx) => $stub += ['id' => $idx]);
+        $stubs = collect($request->stubs)->map(fn (array $stub, int $idx) => $stub += ['id' => $idx, 'filename' => null]);
         $source->stubs()->delete(); // We're mass replacing all the stubs, this is expensive since they all run ffmpeg
         $source->stubs()->createMany($stubs);
+        foreach ($source->stubs as $stub) {
+            CreateStubFileJob::dispatch($stub);
+        }
 
-        return redirect()->back()->with('flash', ['message' => 'Created '.$stubs->count().' stubs successfully!']);
+        return redirect()->back()->with('flash', ['message' => 'Created '.$stubs->count().' stubs successfully! Processing audio files in background.']);
     }
 
     /**

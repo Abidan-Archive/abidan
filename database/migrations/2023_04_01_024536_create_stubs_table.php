@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Report;
 use App\Models\Source;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -21,9 +22,11 @@ return new class extends Migration
             $table->unsignedInteger('from'); // audio time
             $table->unsignedInteger('to'); // audio time
             $table->string('prompt')->nullable();
-            $table->string('filename')->nullable(); // Only null on initial upload
+            $table->string('filename')->nullable(); // Only null until file is ready
 
             $table->timestamps();
+
+            $table->foreignIdFor(Report::class)->nullable();
 
             $table->primary(['id', 'source_id']);
         });

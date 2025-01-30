@@ -1,3 +1,5 @@
+export { default as Autocomplete } from './Autocomplete.svelte';
+export { default as ErrorBanner } from './ErrorBanner.svelte';
 export { default as ErrorMessage } from './ErrorMessage.svelte';
 export { default as Label } from './Label.svelte';
 export { default as IconButton } from './IconButton.svelte';

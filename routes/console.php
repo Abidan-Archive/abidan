@@ -4,6 +4,7 @@ use App\Models\Dialogue;
 use App\Models\Event;
 use App\Models\Report;
 use App\Models\Tag;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -21,6 +22,7 @@ Artisan::command('consume {jsonPath}', function (string $jsonPath) {
     $data = json_decode(file_get_contents($jsonPath), true);
 
     foreach ($data as $i => $e) {
+        $e['date'] = new Carbon($e['date']);
         $event = Event::create($e);
 
         if ($i > 0) {
@@ -29,6 +31,7 @@ Artisan::command('consume {jsonPath}', function (string $jsonPath) {
         $this->line("Consuming $event->name");
         $this->withProgressBar($e['reports'], function ($r) use ($event) {
             try {
+                $r['date'] = new Carbon($r['date']);
                 $report = $event->reports()->create($r);
                 $report->refresh();
 
@@ -55,6 +58,7 @@ Artisan::command('consume {jsonPath}', function (string $jsonPath) {
 })->purpose('Import all the scraped web data');
 
 Artisan::command('killReports', function () {
+    if (!app()->environment('local')) return;
     // Clear out everything since we're testing
     Event::truncate();
     Report::truncate();

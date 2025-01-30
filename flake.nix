@@ -40,6 +40,7 @@
                 # App
                 ffmpeg
                 audiowaveform
+                redis
 
                 # Development
                 sops
@@ -64,6 +65,7 @@
                     upload_max_filesize = 500M
                     post_max_size = 550M
                   '';
+                  extensions = { all, enabled}: enabled ++ [all.redis];
                 };
                 extensions = [
                   "ctype"
@@ -76,6 +78,7 @@
                   "session"
                   "tokenizer"
                   "xml"
+                  "redis"
                 ];
               };
 
@@ -89,6 +92,7 @@
 
               processes = {
                 server.exec = "php artisan serve";
+                queue.exec ="php artisan queue:work";
                 vite.exec = "pnpm dev";
               };
 
@@ -97,6 +101,10 @@
               };
 
               services.mailhog = {
+                enable = true;
+              };
+
+              services.redis = {
                 enable = true;
               };
 

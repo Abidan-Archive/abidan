@@ -1,90 +1,80 @@
 <script>
     import { useForm } from '@inertiajs/svelte';
+    import { route, recaptcha } from '@/lib';
+
     import Page from '@/Components/Page.svelte';
     import {
+        ErrorBanner,
         ErrorMessage,
-        Field,
-        Label,
         Button,
         Input,
     } from '@/Components/forms';
+    import ReportForm from '@/Components/ReportForm.svelte';
     import AudioPlayer from '@/Components/audio/AudioPlayer.svelte';
 
-    let { stub } = $props();
+    let { stub, tags } = $props();
+    let event = stub.source.event;
     let form = useForm({
+        event_id: event.id,
         dialogues: [
             {
                 speaker: 'Speaker',
-                line: '',
+                line: undefined,
             },
             {
                 speaker: 'Will Wight',
-                line: '',
+                line: undefined,
             },
         ],
-        footnote: '',
+        date: event.date,
+        source_label: undefined,
+        source_href: undefined,
+        footnote: undefined,
         tags: [],
+        recaptcha: null,
     });
-
-    function addSpeaker() {
-        $form.dialogues = [
-            ...$form.dialogues,
-            { speaker: 'Speaker', line: '' },
-        ];
-    }
 
     function submit(e) {
         e.preventDefault();
+        recaptcha('report/create', (token) => {
+            $form.recaptcha = token;
+            $form.stub_id = stub.id;
+            $form.dialogues = $form.dialogues.filter((d) =>
+                (d.speaker + d.line).trim()
+            );
+            $form.post(route('report.store'));
+        });
     }
 </script>
 
 <Page header="Transcribe Report">
     <form method="POST" onsubmit={submit} class="flex flex-col gap-4">
+        <h3 class="text-center">{stub.prompt}</h3>
+        <ErrorBanner {form} />
         <div class="flex justify-center">
             <AudioPlayer src={stub.audio_url} />
         </div>
-        <div class="card flex flex-col gap-4">
-            <h3>Dialogue</h3>
-            {#each $form.dialogues as dialogue, idx}
-                <div>
-                    {#if idx > 0}
-                        <hr />
-                    {/if}
-                    <div class="flex flex-col gap-2">
-                        <Label for={'speaker-' + idx} class="capitalize">
-                            Speaker
-                        </Label>
-                        <Input
-                            id={'speaker-' + idx}
-                            type="text"
-                            class="input block w-full"
-                            bind:value={dialogue.speaker} />
-                        <!-- test error messages here -->
-                        <ErrorMessage message={$form?.errors?.dialogues} />
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <Label for={'line-' + idx} class="capitalize">
-                            Line
-                        </Label>
-                        <textarea
-                            id={'line-' + idx}
-                            class="textarea block w-full"
-                            bind:value={dialogue.line}></textarea>
-                        <!-- test error messages here -->
-                        <ErrorMessage message={$form?.errors?.dialogues} />
-                    </div>
-                </div>
-            {/each}
-            <div class="flex justify-end">
-                <Button class="item-right" onclick={addSpeaker}>
-                    Add another speaker
-                </Button>
-            </div>
-        </div>
-        <div class="card flex flex-col gap-4">
-            <h3>Metadata</h3>
-            <Field {form} name="footnote" />
-        </div>
+
+        <ReportForm {form} {tags} {eventSection} />
+
+        {#snippet eventSection()}
+            <h3>
+                Event &dash;
+                <small>
+                    This is gathered from the stub and cannot be changed.
+                </small>
+            </h3>
+            <Input
+                type="text"
+                disabled
+                class="input block w-full"
+                value={`${event.name} - #${event.id}`} />
+            <ErrorMessage message={$form.errors.event_id} />
+            <ErrorMessage message={$form.errors.stub_id} />
+        {/snippet}
+
+        <ErrorMessage message={$form.errors.recaptcha} />
+
         <div class="flex items-baseline justify-end">
             <Button>Create</Button>
         </div>

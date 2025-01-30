@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreReportRequest;
 use App\Models\Event;
 use App\Models\Report;
 use App\Models\Stub;
 use App\Models\Source;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Inertia\Response;
 
@@ -42,8 +44,9 @@ class ReportController extends Controller
      */
     public function create()
     {
-        $events = Event::all();
-        return inertia('Report/Create', compact('events'));
+        $events = Event::select(['id', 'name', 'date'])->get();
+        $tags = Tag::select('name')->get()->pluck('name');
+        return inertia('Report/Create', compact('events', 'tags'));
     }
 
     /**
@@ -54,7 +57,8 @@ class ReportController extends Controller
     public function createFromStub(Event $event, Source $source, Stub $stub)
     {
         $stub->load('source.event');
-        return inertia('Report/Transcribe', compact('stub'));
+        $tags = Tag::select('name')->get()->pluck('name');
+        return inertia('Report/Transcribe', compact('stub', 'tags'));
     }
 
     /**
@@ -62,9 +66,26 @@ class ReportController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function store(Request $request)
+    public function store(StoreReportRequest $request)
     {
-        //
+        $event = Event::findOrFail($request->event_id);
+        $report = $event->reports()->create($request->validated());
+
+        foreach ($request->dialogues as $i => $d) {
+            $d['order'] = $i;
+            $report->dialogues()->create($d);
+        }
+
+        foreach ($request->tags as $t) {
+            $tag = Tag::where('name', $t)->firstOrFail();
+            $report->tags()->attach($tag);
+        }
+
+        if ($request->stub_id !== null) {
+            Stub::findOrFail($request->stub_id)->attach($report);
+        }
+
+        return to_route('report.show', compact('report'))->with('flash', ['message'=> 'Report successfully created!']);
     }
 
     /**
@@ -102,6 +123,7 @@ class ReportController extends Controller
      */
     public function destroy(Report $report)
     {
-        //
+        // Delete report
+        // Delete any stubs that may be associated
     }
 }

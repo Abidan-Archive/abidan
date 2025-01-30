@@ -23,6 +23,8 @@ return new class extends Migration
 
             $table->foreignIdFor(Event::class);
 
+            $table->timestamp('reviewed_at')->nullable();
+
             $table->softDeletes();
             $table->timestamps();
         });

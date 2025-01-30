@@ -109,7 +109,7 @@
                             <h3 class="font-bold">Files</h3>
                             <Button
                                 type="button"
-                                variant="destructive"
+                                variant="danger"
                                 onclick={handleRemoveAllFiles}>
                                 Remove All
                             </Button>
