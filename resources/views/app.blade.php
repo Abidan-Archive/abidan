@@ -8,6 +8,7 @@
     <script>
         window.grecaptcha_sitekey = "{{config('services.recaptcha_v3.sitekey')}}";
     </script>
+    @include('favicons')
     @vite('resources/js/app.js')
     @inertiaHead
   </head>
