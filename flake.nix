@@ -65,7 +65,11 @@
                     upload_max_filesize = 500M
                     post_max_size = 550M
                   '';
-                  extensions = { all, enabled}: enabled ++ [all.redis];
+                  extensions = {
+                    all,
+                    enabled,
+                  }:
+                    enabled ++ [all.redis];
                 };
                 extensions = [
                   "ctype"
@@ -92,7 +96,7 @@
 
               processes = {
                 server.exec = "php artisan serve";
-                queue.exec ="php artisan queue:work";
+                queue.exec = "php artisan queue:work";
                 vite.exec = "pnpm dev";
               };
 
