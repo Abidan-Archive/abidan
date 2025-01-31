@@ -1,5 +1,6 @@
 <script>
     import Page from '@/Components/Page.svelte';
+    import Paginator from '@/Components/Paginator.svelte';
     import Report from '@/Components/Report.svelte';
 
     let { user, likes } = $props();
@@ -24,9 +25,10 @@
         <h3 class="text-2xl">Likes</h3>
         <hr />
         <div class="flex flex-col gap-5">
-            {#each likes as report}
+            {#each likes.data as report}
                 <Report {report} />
             {/each}
+            <Paginator {...likes} />
         </div>
     {/if}
 </Page>

@@ -21,7 +21,7 @@ class UserController extends Controller
      */
     public function show(User $user): Response
     {
-        $likes = $user->likes->map->likeable;
+        $likes = $user->likes->map->likeable->paginate(20);
 
         return inertia('User/Show', compact('user', 'likes'));
     }
