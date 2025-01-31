@@ -142,8 +142,9 @@
             <ErrorMessage message={$form.errors.reason} />
         </div>
         <div class="flex items-center justify-between pt-4">
-            <Button type="button" on:click={() => modalStore.close()}
-                >Cancel</Button>
+            <Button type="button" onclick={() => modalStore.close()}>
+                Cancel
+            </Button>
             <Button type="submit">Ban</Button>
         </div>
     </form>
