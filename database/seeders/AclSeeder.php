@@ -71,6 +71,10 @@ class AclSeeder extends Seeder
             'name' => 'admin_reset_password',
             'label' => 'Sets a Users password to a random string and asks them to reset via email',
         ]);
+        $deleteUser = Permission::create([
+            'name' => 'admin_delete_user',
+            'label' => 'Deletes a Users account'
+        ]);
 
         // Role Permissions
         $mod->permissions()->saveMany([

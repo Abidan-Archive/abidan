@@ -1,14 +1,14 @@
 <script>
+    import { inertia, router } from '@inertiajs/svelte';
+    import { getModalStore, popup } from '@skeletonlabs/skeleton';
+
     import AdminSidebar from '@/Pages/Admin/components/AdminSidebar.svelte';
     import ChevronDown from '@/Components/icons/ChevronDown.svelte';
     import Page from '@/Components/Page.svelte';
     import route from '@/lib/route';
     import { XMark } from '@/Components/icons';
-    import { inertia, router } from '@inertiajs/svelte';
-    import { popup } from '@skeletonlabs/skeleton';
-    import { getModalStore } from '@skeletonlabs/skeleton';
 
-    let { users } = $props();
+    let { users, auth } = $props();
 
     /** @type {import('@skeletonlabs/skeleton').PopupSettings} */
     const actionPopup = {
@@ -21,14 +21,19 @@
     const managementActions = [
         {
             label: 'Reset Password',
+            criteria: (user, permissions) =>
+                !user.is_sso && permissions.includes('admin_reset_password'),
             handler: (user) => console.log('Reset Password', user),
         },
         {
             label: 'Assume',
+            criteria: (_, permissions) =>
+                permissions.includes('admin_assume_user'),
             handler: (user) => router.post(route('admin.assume', user)),
         },
         {
             label: 'Ban',
+            criteria: (_, permissions) => permissions.includes('admin_ban'),
             handler: (user) =>
                 modalStore.trigger({
                     type: 'component',
@@ -38,6 +43,8 @@
         },
         {
             label: 'Delete',
+            criteria: (user, permissions) =>
+                permissions.includes('admin_delete_user'),
             handler: (user) =>
                 modalStore.trigger({
                     type: 'confirm',
@@ -100,6 +107,11 @@
                                             {#each managementActions as action}
                                                 <li>
                                                     <button
+                                                        disabled={action.criteria(
+                                                            user,
+                                                            auth.user
+                                                                .permissions
+                                                        )}
                                                         type="button"
                                                         class="w-full"
                                                         onclick={() =>
