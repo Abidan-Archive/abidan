@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Contracts\Likeable as LikeableContract;
 use App\Models\Concerns\InertiaPaginate;
 use App\Models\Concerns\Likeable;
+use App\Models\Scopes\ReviewedScope;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -30,6 +31,11 @@ class Report extends Model implements LikeableContract
 
     protected $withCount = ['likes'];
 
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new ReviewedScope);
+    }
+
     protected function casts(): array
     {
         return [
@@ -47,6 +53,7 @@ class Report extends Model implements LikeableContract
         return $this->hasMany(Dialogue::class);
     }
 
+    /** Depreciated */
     public function proffers(): HasMany
     {
         return $this->hasMany(Proffer::class);
@@ -59,7 +66,7 @@ class Report extends Model implements LikeableContract
 
     public function stub(): HasOne
     {
-        return $this->hasOne(Stub::class)->withDefault();
+        return $this->hasOne(Stub::class)->withDefault(null);
     }
 
     protected function permalink(): Attribute

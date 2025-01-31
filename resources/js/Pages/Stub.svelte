@@ -7,7 +7,6 @@
     import { secondsToDuration } from '@/lib/time';
 
     let { stubs } = $props();
-    console.log(stubs);
 </script>
 
 <Page header="All Stubs">

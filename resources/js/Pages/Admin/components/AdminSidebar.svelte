@@ -7,6 +7,8 @@
         Overview: route('admin.index'),
         'Create Event': route('event.create'),
         'Create Tag': route('tag.create'),
+        'Create Report': route('report.create'),
+        'Review Reports': route('admin.review'),
         'Manage Users': route('admin.user'),
         'Manage Stubs': route('stub.index'),
         // 'Review Reports': route('home'),

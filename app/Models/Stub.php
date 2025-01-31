@@ -65,7 +65,7 @@ class Stub extends Model
 
     public function audioUrl(): Attribute
     {
-        return Attribute::make(get: fn ($value, $attributes) => $attributes['filename'] !== null
+        return Attribute::make(get: fn ($value, $attributes) => ($attributes['filename'] ?? null) !== null
             ? Storage::url(self::DIRECTORY.'/'.$attributes['filename'])
             : null);
     }
